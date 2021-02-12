@@ -1,0 +1,30 @@
+@font-face {
+	font-family: "Source Han Sans CN";
+	src: url("NotoSansHans-Black.otf");
+	src: url("NotoSansHans-Bold.otf");
+	src: url("NotoSansHans-DemiLight.otf");
+	src: url("NotoSansHans-Medium.otf");
+	src: url("NotoSansHans-Regular.otf");
+	src: url("NotoSansHans-Thin-Windows.otf");
+}
+
+* {
+	padding: 0;
+	margin: 0;
+	font-size: 14px;
+}
+
+html, body {
+	margin: 0 auto;
+	height: 1080px;
+	width: 100%;
+}
+
+#app {
+	width: 1920px;
+	font-family: "Source Han Sans CN";
+}
+
+.el-icon-loading:before {
+	font-size: 60px;
+}
