@@ -50,8 +50,11 @@
 						<el-submenu index="2">
 							<template slot="title"> <i style="color: #fff;margin-right:10px" class="iconfont icon-xitong"></i>								<span slot="title">Systems</span> </template>
 							<el-menu-item-group>
+								
 								<el-menu-item index='/config' key="Config">Config</el-menu-item>
 								<el-menu-item index='/user/list' key="User">User</el-menu-item>
+								<el-menu-item index='/photo/list' key="Photo">Photo</el-menu-item>
+								
 							</el-menu-item-group>
 						</el-submenu>
 					</el-menu>

@@ -10,6 +10,7 @@ import UserModify from '../views/User/modify'
 import TemplateList from '../views/template/list'
 import TemplateAdd from '../views/template/add'
 import Config from '../views/config'
+import PhotoList from '../views/photoList'
 Vue.use(VueRouter);
 
 const routes = [{
@@ -59,7 +60,19 @@ const routes = [{
 			requireAuth: true //添加该字段，true表示进入这个路由是需要登录的,false不需要登录
 		},
 	},
-
+{
+		path: '/Photo',
+		name: 'Photo',
+		component: Home,
+		children: [{
+			path: 'List',
+			name: 'Photo',
+			component: PhotoList
+		}],
+		meta: {
+			requireAuth: true //添加该字段，true表示进入这个路由是需要登录的,false不需要登录
+		},
+	},
 	{
 		path: '/Config',
 		name: 'Config',
