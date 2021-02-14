@@ -1,0 +1,19 @@
+
+/*角色管理新增*/
+.place {
+  height: 50px;
+}
+
+.tag {
+  margin-right: 10px;
+}
+
+/*.el-select {
+  width: 100% !important;
+}*/
+
+.return-btn {
+  width: 100%;
+  margin-top: 10px;
+  text-align: center;
+}

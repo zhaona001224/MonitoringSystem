@@ -1,0 +1,58 @@
+{
+  "id": "1902163",
+  "name": "userManager",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "947487",
+      "name": "系统",
+      "font_class": "xitong",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "1311635",
+      "name": "折扣",
+      "font_class": "zhekou",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "1688480",
+      "name": "提示",
+      "font_class": "tishi",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    },
+    {
+      "icon_id": "5818670",
+      "name": "订单",
+      "font_class": "dingdan",
+      "unicode": "e6ab",
+      "unicode_decimal": 59051
+    },
+    {
+      "icon_id": "7090064",
+      "name": "提示",
+      "font_class": "tishi1",
+      "unicode": "e714",
+      "unicode_decimal": 59156
+    },
+    {
+      "icon_id": "7531566",
+      "name": "产品",
+      "font_class": "stack",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "7550240",
+      "name": "优惠券",
+      "font_class": "youhuiquan",
+      "unicode": "e692",
+      "unicode_decimal": 59026
+    }
+  ]
+}

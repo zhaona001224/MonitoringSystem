@@ -1,0 +1,30 @@
+.el-input,.el-textarea,.el-select{
+	width: 800px;
+}
+
+.el-pagination .el-input {
+	width: 60px!important;
+}
+
+.el-pagination .el-select {
+  width: 120px!important;
+}
+
+
+/*角色管理列表*/
+.common-btn {
+  width: auto!important;
+}
+
+.search-input {
+  width: 300px;
+}
+
+.search-input .el-input {
+  width: 300px!important;
+}
+.hidden-style{
+	overflow: hidden;
+text-overflow:ellipsis;
+white-space: nowrap;
+}
