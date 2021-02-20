@@ -7,6 +7,7 @@ import router from './router'
 import store from './store/store'
 import axios from './http'
 import Vuex from 'vuex'
+import * as types from './store/types'
 import './assets/css/public.css'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -15,6 +16,7 @@ import util from './utils/common/util'
 import axiosUtil from './utils/axios/axios'
 import clipboard from 'clipboard'
 import Centrifuge from 'centrifuge'
+import echarts from 'echarts'
 Vue.use(Vuex);
 Vue.use(Router);
 Vue.use(ElementUI);　　　
@@ -24,11 +26,24 @@ Vue.prototype.$get = axiosUtil.axiosGet;
 Vue.prototype.$post = axiosUtil.axiosPost;
 Vue.prototype.$delete = axiosUtil.axiosDelete;
 Vue.prototype.store = store;
+Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false;
-Vue.prototype.Centrifuge = new Centrifuge('ws://centrifuge.example.com/connection/websocket');
+var centrifuge = new Centrifuge("ws://193.22.152.235:8000/connection/websocket", {
  
-Vue.prototype.Centrifuge.setToken(localStorage.getItem('token'));
-/* eslint-disable no-new */
+  debug: true
+});
+
+centrifuge.connect();
+
+var subscription = centrifuge.subscribe("alarmdata", function (message) {
+
+
+								
+});
+var subscription = centrifuge.subscribe("keepdata", function (message) {
+store.commit(types.BASEDATA, message.data);
+console.log(message);
+});
 new Vue({
 	el: '#app',
 	axios,

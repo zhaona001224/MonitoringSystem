@@ -12,3 +12,4 @@ export const CONFIGDATA = 'configData';
 export const UID = 'uid';
 
 export const OID = 'oid';
+export const BASEDATA = 'baseData';

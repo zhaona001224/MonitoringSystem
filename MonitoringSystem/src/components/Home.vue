@@ -64,7 +64,20 @@
 					path: '/schematicDia'
 				}, {
 					text: '参数监控',
-					path: '/222'
+					path: '/parameterMon'
+				},
+				 {
+					text: '故障与查询',
+					path: '/faultsInquiries'
+				},{
+					text: '趋势曲线',
+					path: '/trendCurve'
+				},{
+					text: '维护保养',
+					path: '/maintenance'
+				},{
+					text: '寿命件管理',
+					path: '/lifePart'
 				}],
 				backUpType: "",
 				visible2: false,
@@ -165,8 +178,11 @@
 				height: 156px;
 				box-sizing: border-box;
 				text-align: center;
+				&:hover{
+					background: none;
+				}
 				img {
-					margin-top: 32px;
+					margin-top: 28px;
 					width: 39px;
 					margin-bottom: 8px;
 				}

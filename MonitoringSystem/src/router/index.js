@@ -16,8 +16,33 @@ const routes = [{
         redirect: '/Home',
         children: [{
             path: 'schematicDia',
-            name: '首页',
+            name: 'schematicDia',
             component: resolve => require(['@/views/schematicDia'], resolve),
+
+        },{
+        	path: 'parameterMon',
+            name: 'parameterMon',
+            component: resolve => require(['@/views/parameterMon'], resolve),
+
+        },{
+        	path: 'faultsInquiries',
+            name: 'faultsInquiries',
+            component: resolve => require(['@/views/faultsInquiries'], resolve),
+
+        },{
+        	path: 'trendCurve',
+            name: 'trendCurve',
+            component: resolve => require(['@/views/trendCurve'], resolve),
+
+        },{
+        	path: 'maintenance',
+            name: 'maintenance',
+            component: resolve => require(['@/views/maintenance'], resolve),
+
+        },{
+        	path: 'lifePart',
+            name: 'lifePart',
+            component: resolve => require(['@/views/lifePart'], resolve),
 
         }]
     },

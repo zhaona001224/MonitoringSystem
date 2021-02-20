@@ -27,7 +27,7 @@
 <style lang="less" scoped>
 	.contain {
 		display: flex;
-		padding: 41px 22px;
+		padding: 2px 21px;
 		justify-content: space-between;
 		.left {
 			display: flex;
