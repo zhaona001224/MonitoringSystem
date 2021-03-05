@@ -107,7 +107,7 @@
 			},
 			handleEdit(item) {
 				localStorage.setItem('keyword', this.keyword);
-				this.$router.push('/template/Add/' + this.$route.params.key + '?ID=' + item
+				this.$router.push('/template/Add/' + this.$route.params.key + '?id=' + item
 					.ID)
 			},
 			selfSearch() {

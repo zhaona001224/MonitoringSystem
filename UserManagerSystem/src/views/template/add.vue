@@ -4,7 +4,7 @@
 		<el-card class="box-card">
 			<el-breadcrumb separator="/">
 				<el-breadcrumb-item :to="{ path: '/template/list/'+this.$route.params.key }">{{$route.params.key}}</el-breadcrumb-item>
-				<el-breadcrumb-item>{{$route.query.ID?'Edit':'Add'}}</el-breadcrumb-item>
+				<el-breadcrumb-item>{{$route.query.id?'Edit':'Add'}}</el-breadcrumb-item>
 			</el-breadcrumb>
 		</el-card>
 		<el-card class="box-card">
@@ -20,19 +20,19 @@
 						<!--	{{formData}}-->
 						<el-tree :default-expand-all="true" v-if="item.data.type=='tree'" ref="tree"
 						 :props="defaultProps" style="width:800px" :data="item.data.source[0].name?item.data.source:[]"
-						 :key="item.data.ID" :highlight-current="true" node-key="ID" :label="item.name"
-						 :value="item.ID" accordion @node-click="handleNodeClick"> </el-tree>
+						 :key="item.data.id" :highlight-current="true" node-key="id" :label="item.name"
+						 :value="item.id" accordion @node-click="handleNodeClick"> </el-tree>
 						<el-select :clearable="true" @change="refreshData(subItem.name)"
 						 style="width:800px" multiple v-if="item.data.type=='multiselect'" v-model="form[item.name]"
 						 :placeholder="'请选择'+item.name">
-							<el-option v-for="subItem in item.data.source" :key="subItem.ID" :label="subItem.name"
-							 :value="subItem.ID"> </el-option>
+							<el-option v-for="subItem in item.data.source" :key="subItem.id" :label="subItem.name"
+							 :value="subItem.id"> </el-option>
 						</el-select>
 						<el-select :clearable="true" @click="judgeGame(subItem.name)" @change="refreshData"
 						 style="width:800px" v-if="item.data.type=='select'" v-model="form[item.name]"
 						 :placeholder="'请选择'+item.name">
-							<el-option v-for="subItem in item.data.source" :key="subItem.ID" :label="subItem.name"
-							 :value="subItem.ID"> </el-option>
+							<el-option v-for="subItem in item.data.source" :key="subItem.id" :label="subItem.name"
+							 :value="subItem.id"> </el-option>
 						</el-select>
 						<el-radio-group v-if="item.data.type=='bool'" v-model="form[item.name]" @change="refreshData">
 							<el-radio :label="item.data.source[0]?item.data.source[0]:true">{{item.data.source[0]?item.data.source[0]:true}}</el-radio>
@@ -52,8 +52,8 @@
 							<el-select filterable clearable style="display: inline-block;width: 800px;margin:20px 0 "
 							 v-if="item.data.type=='file'&&picType[item.name]==1" v-model="form[item.name]"
 							 :placeholder="'请选择'+item.name">
-								<el-option v-for="subItem in picSource" :key="subItem.ID" :label="subItem.name"
-								 :value="subItem.ID"> </el-option>
+								<el-option v-for="subItem in picSource" :key="subItem.id" :label="subItem.name"
+								 :value="subItem.id"> </el-option>
 							</el-select>
 							<div style="position: relative;" v-if="form[item.name]&&picType[item.name]==1">
 							<img :src="imgUrl+form[item.name]" class="avatar" /> <span style="position: absolute;left: 130px;top:-14px;display: block;"
@@ -164,7 +164,7 @@
 			},
 			//点击组织结构树，选择事件
 			handleNodeClick(obj) {
-				this.form.belongto = obj.ID;
+				this.form.belongto = obj.id;
 				this.$forceUpdate();
 			},
 			//获取图片库内容
@@ -186,7 +186,7 @@
 				form = JSON.parse(JSON.stringify(this.form)); //this.templateData是父组件传递的对象  
 				var that = this;
 				for (var key in form) {
-					if (key != 'ID' && this.dataSource.formData.data[key] && this.form[key]) {
+					if (key != 'id' && this.dataSource.formData.data[key] && this.form[key]) {
 						if (this.dataSource.formData.data[key].type == "select" || this.dataSource
 							.formData.data[key].type == "tree") {
 							if (key == "belongto") {
@@ -196,7 +196,7 @@
 							}
 							if (this.form[key].toString().indexOf(',') > -1) return
 							var data = source.filter((item, index) => {
-								return item.ID == this.form[key]
+								return item.id == this.form[key]
 							})
 							form[key] = this.form[key] + "," + data[0].name
 						}
@@ -205,7 +205,7 @@
 							var array = [];
 							this.form[key].map((formItem) => {
 								var data = source.filter((item, index) => {
-									return item.ID == formItem
+									return item.id == formItem
 								})
 								array.push(formItem + "," + data[0].name)
 							})
@@ -215,14 +215,14 @@
 				}
 				this.$refs.form.validate((valid) => {
 					if (valid) {
-						if (this.$route.query.ID) {
+						if (this.$route.query.id) {
 							for (var key in form) {
 								if (form[key] === '') {
 									form[key] = ''
 								}
 							}
 							that.$post("/admin/v1/content/update?type=" + this.$route.params.key +
-								"&ID=" + this.$route.query.ID, form).then(response => {
+								"&id=" + this.$route.query.id, form).then(response => {
 								if (response.retCode == 0) {
 									that.$util.successAlert("Modify Success！", '/template/list/' +
 										this.$route.params.key, 'return list');
@@ -254,10 +254,10 @@
 			},
 			getTreeList(data, fn) {
 				data && data.map((item, index) => {
-					if (!item.ID) return
+					if (!item.id) return
 					item.children = this.treeData.filter((subItem, index) => {
 						return parseInt(subItem.belongto && subItem.belongto.split(',')[0]) ==
-							item.ID
+							item.id
 					})
 					this.getTreeList(item.children)
 				})
@@ -268,7 +268,7 @@
 				var source = this.dataSource.formData.data['game'].source
 				if (source[0].name) {
 					var data = source.filter((item, index) => {
-						return item.ID == this.form.game
+						return item.id == this.form.game
 					})
 					var q = data[0].name
 				} else {
@@ -279,7 +279,7 @@
 						if (response.retCode == 0) {
 							response.data && response.data.map((item) => {
 								item.name = item.name + '-' + item.sname
-								item.ID = item.ID + ''
+								item.id = item.id + ''
 							})
 							this.treeData = response.data || [];
 							var Node1 = this.treeData && this.treeData.filter((item, index) => {
@@ -287,7 +287,7 @@
 							})
 							Node1.unshift({
 								name: 'none',
-								ID: ''
+								id: ''
 							})
 							this.getTreeList(Node1)
 							this.dataSource.formData.data[key] = this.dataSource.formData.data[key] || {}
@@ -312,7 +312,7 @@
 				var source = this.dataSource.formData.data['game'].source
 				if (source[0].name) {
 					var data = source.filter((item, index) => {
-						return item.ID == this.form.game
+						return item.id == this.form.game
 					})
 					var q = data[0].name
 				} else {
@@ -322,7 +322,7 @@
 					if (response.retCode == 0) {
 						response.data && response.data.map((item) => {
 							item.name = item.name + '-' + item.sname
-							item.ID = item.ID + ''
+							item.id = item.id + ''
 						})
 						this.dataSource.formData.data[key].source = response.data || [];
 						this.$forceUpdate();
@@ -339,7 +339,7 @@
 				that.$get(url, {}).then(response => {
 					if (response.retCode == 0) {
 						response.data.map((item) => {
-							item.ID = item.ID + ''
+							item.id = item.id + ''
 						})
 						this.dataSource.formData.data[key].source = response.data || [];
 						//						this.getServeData('category');
@@ -354,7 +354,7 @@
 								}
 							});
 						}
-						if (this.$route.query.ID) {
+						if (this.$route.query.id) {
 							setTimeout(() => {
 								for (var key in that.dataSource.formData.data) {
 									if (that.dataSource.formData.data[key].isFilter) {
@@ -440,7 +440,7 @@
 					} else {
 						this.dataSource.formData.data[key].source.map((item, index) => {
 							this.dataSource.formData.data[key].source[index] = {
-								ID: item,
+								id: item,
 								value: item,
 								name: item
 							}
@@ -455,9 +455,9 @@
 			this.$forceUpdate();
 		},
 		created() {
-			if (this.$route.query.ID) {
-				this.$get("/admin/v1/content?type=" + this.$route.params.key + "&ID=" +
-					this.$route.query.ID, {}).then(response => {
+			if (this.$route.query.id) {
+				this.$get("/admin/v1/content?type=" + this.$route.params.key + "&id=" +
+					this.$route.query.id, {}).then(response => {
 					if (response.retCode == 0) {
 						this.form = response.data;
 						this.getPicData();
