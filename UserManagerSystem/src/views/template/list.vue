@@ -17,22 +17,22 @@
 						<el-radio :label="scope.row.yun_id" v-model="selectid">&nbsp;</el-radio>
 					</template>
 				</el-table-column>-->
-				<el-table-column header-align="left" sortable prop="id" label="id" width="60px">
+				<el-table-column header-align="left" sortable prop="ID" label="ID" width="60px">
 				</el-table-column>
-				<el-table-column v-for="(item,index) in formData" :key="item.id"
+				<el-table-column v-for="(item,index) in formData" :key="item.ID"
 				 v-if="item&&item.name=='price'" :prop="item&&item.name" :label="item&&item.name"
 				 width="120px">
 					<template slot-scope="scope">
-						<el-input @keyup.enter.native="handleInputConfirm(scope.row.id,scope.row.price)"
-						 style="width:110px" @blur="handleInputClear(scope.row.id,scope.row.price)"
+						<el-input @keyup.enter.native="handleInputConfirm(scope.row.ID,scope.row.price)"
+						 style="width:110px" @blur="handleInputClear(scope.row.ID,scope.row.price)"
 						 v-model="scope.row.price" :placeholder="'请输入'+item.name"></el-input>
 					</template>
 				</el-table-column>
 				<el-table-column sortable :sortable="item&&item.name=='name'" v-for="(item,index) in formData"
-				 :key="item&&item.id" v-if="item&&item.data.type!='textarea'&&item.data.type!='file'&&item.name!='price'"
+				 :key="item&&item.ID" v-if="item&&item.data.type!='textarea'&&item.data.type!='file'&&item.name!='price'"
 				 header-align="left" :prop="item&&item.name" :label="item&&item.name" :width="(item.name=='type'||item.name=='miniNumber'||item.name=='hotItem'||item.name=='online')?'110px':'140px'">
 				</el-table-column>
-				<el-table-column v-for="(item,index) in formData" :key="item.id"
+				<el-table-column v-for="(item,index) in formData" :key="item.ID"
 				 v-if="item&&item.data.type=='file'" cell-style="text-align:center" header-align="center"
 				 :prop="item&&item.name" :label="item&&item.name" width="120px">
 					<template slot-scope="scope"> <img v-if="scope.row[item&&item.name]" style="width: 80px;height: 80px;" :src="imgUrl+scope.row[item&&item.name]"
@@ -47,7 +47,7 @@
 						<el-button type="text" size="small" @click="handleEdit(scope.row)">Edit</el-button>
 						<el-button type="text" size="small" @click="handleDelete(scope.row)">Delete</el-button>
 						<el-button type="text" class="clip" size="small" :data-clipboard-text="getFromData(scope.row)"
-						 @click="copy(scope.row.id)">Copy</el-button>
+						 @click="copy(scope.row.ID)">Copy</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -86,7 +86,7 @@
 				return true;
 			},
 			getFromData(data) {
-				var string = data.id + " " + " " + " " + " " + " " + " " + " "
+				var string = data.ID + " " + " " + " " + " " + " " + " " + " "
 				this.formData.map((item, index) => {
 					if (this.dataSource.formData.data[item.name] && this.dataSource.formData
 						.data[item.name].type != "textarea" && this.dataSource.formData.data[
@@ -107,8 +107,8 @@
 			},
 			handleEdit(item) {
 				localStorage.setItem('keyword', this.keyword);
-				this.$router.push('/template/Add/' + this.$route.params.key + '?id=' + item
-					.id)
+				this.$router.push('/template/Add/' + this.$route.params.key + '?ID=' + item
+					.ID)
 			},
 			selfSearch() {
 				if (!this.keyword) {
@@ -128,11 +128,11 @@
 				})
 				this.$forceUpdate();
 			},
-			handleInputClear(id, price) {
+			handleInputClear(ID, price) {
 				this.tableData.map((item, index) => {
-					if (item.id == id) {
+					if (item.ID == ID) {
 						this.originTable.map((subItem, subIndex) => {
-							if (subItem.id == id) {
+							if (subItem.ID == ID) {
 								this.tableData[index].price = this.originTable[subIndex].price;
 							}
 						})
@@ -140,12 +140,12 @@
 				})
 				this.$forceUpdate();
 			},
-			handleInputConfirm(id, price) {
+			handleInputConfirm(ID, price) {
 				var that = this;
-				var data = this.originTable.filter((item) => item.id == id);
+				var data = this.originTable.filter((item) => item.ID == ID);
 				data[0].price = price;
 				that.$post("/admin/v1/content/update?type=" + this.$route.params.key +
-					"&id=" + id, data[0]).then(response => {
+					"&ID=" + ID, data[0]).then(response => {
 					if (response.retCode == 0) {
 						that.$message({
 							type: 'success',
@@ -160,7 +160,7 @@
 					}
 				})
 			},
-			copy(id) {
+			copy(ID) {
 				var that = this;
 				//				var clipboard1 = new this.clipboard('.clip')
 				//				clipboard1.on('success', e => {
@@ -175,7 +175,7 @@
 				//					clipboard.destroy()
 				//				})
 				var data = this.originTable.filter((item, index) => {
-					return item.id == id
+					return item.ID == ID
 				})
 				var obj = {}
 				for (var key in this.dataSource.formData.data) {
@@ -209,7 +209,7 @@
 				} else {
 					url = '/admin/v1/content/approve'
 				}
-				this.$post(url + "?type=" + this.$route.params.key + "&id=" + item.id, {}).then(
+				this.$post(url + "?type=" + this.$route.params.key + "&ID=" + item.ID, {}).then(
 					response => {
 						if (response.retCode == 0) {
 							this.$message({
@@ -227,8 +227,8 @@
 			},
 			//删除
 			handleDelete(item) {
-				this.$delete("/admin/v1/content?type=" + this.$route.params.key + "&id=" +
-					item.id, {}).then(response => {
+				this.$delete("/admin/v1/content?type=" + this.$route.params.key + "&ID=" +
+					item.ID, {}).then(response => {
 					if (response.retCode == 0) {
 						this.$message({
 							message: '删除成功!',

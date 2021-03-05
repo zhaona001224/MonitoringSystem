@@ -36,11 +36,12 @@ var centrifuge = new Centrifuge("ws://193.22.152.235:8000/connection/websocket",
 centrifuge.connect();
 
 var subscription = centrifuge.subscribe("alarmdata", function (message) {
-
+console.log(message);
 
 								
 });
 var subscription = centrifuge.subscribe("keepdata", function (message) {
+	debugger
 store.commit(types.BASEDATA, message.data);
 console.log(message);
 });

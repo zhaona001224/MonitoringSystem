@@ -90,18 +90,8 @@
 							if (response.retCode == 0) {
 								localStorage.setItem('token', response.data);
 								this.loginData = JSON.parse(response.contents);
-								this.menuTrees = [];
-								for (var key in this.loginData) {
-									this.menuTrees.push({
-										name: key,
-										formData: this.loginData[key]
-									})
-								}
-								this.menuTrees.sort((a, b) => {
-									//排序基于的数据
-									return a.formData.no - b.formData.no;
-								})
-								that.$store.commit(types.LOGINDATA, JSON.stringify(this.menuTrees));
+								
+								
 								that.$message({
 									type: 'success',
 									message: '登录成功!'
@@ -111,7 +101,7 @@
 									if (response1.retCode == 0) {
 										that.$store.commit(types.CONFIGDATA, JSON.stringify(response1.data[
 											0].data))
-										that.$router.push('/template/List/' + this.menuTrees[0].name);
+										
 									} else {
 										that.$message({
 											type: 'warning',

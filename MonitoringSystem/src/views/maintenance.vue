@@ -15,18 +15,15 @@
 			<el-table :data="tableData" width="100%">
 				<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
 				</el-table-column>
-				<el-table-column align="center" prop="updated" label="日期"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="时间"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="报警内容"
-				 width="530px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="报警级别"
-				 width="360px" cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="name" label="维保内容" width="610px"
+				 cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="duration" label="保养周期"
+				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="start" label="保养日期"
+				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="end" label="下次保养日期"
+				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
 			</el-table>
-			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page.sync="pageNum" :page-sizes="[5, 10, 20, 30]" :page-size="pageSize"
-			 layout="total, sizes, prev, pager, next, jumper" :total="total"> </el-pagination>
 		</div>
 	</div>
 </template>
@@ -53,9 +50,15 @@
 				this.pageSize = val;
 				this.queryTable();
 			},
-			queryTabel() {}
+			queryTabel() {
+				this.$get("/admin/v1/contents?type=Maintenance", {}).then(response => {
+					this.tableData = response.data
+				})
+			}
 		},
-		created() {}
+		created() {
+			this.queryTabel()
+		}
 	}
 </script>
 <style lang="less" scoped>
@@ -124,6 +127,5 @@
 			box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
 			border-radius: 3px;
 		}
-	
 	}
 </style>

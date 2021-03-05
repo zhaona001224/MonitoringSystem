@@ -15,20 +15,17 @@
 			<el-table :data="tableData" width="100%">
 				<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
 				</el-table-column>
-				<el-table-column align="center" prop="updated" label="零件名称"
+				<el-table-column align="center" prop="name" label="零件名称"
 				 width="400px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="装机数"
+				<el-table-column align="center" prop="quantity" label="装机数"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="寿命 （年）"
+				<el-table-column align="center" prop="life" label="寿命 （年）"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="更换日期"
+				<el-table-column align="center" prop="start" label="更换日期"
 				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
-				 <el-table-column align="center" prop="updated" label="下次更换日期"
+				 <el-table-column align="center" prop="end" label="下次更换日期"
 				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
 			</el-table>
-			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page.sync="pageNum" :page-sizes="[5, 10, 20, 30]" :page-size="pageSize"
-			 layout="total, sizes, prev, pager, next, jumper" :total="total"> </el-pagination>
 		</div>
 	</div>
 </template>
@@ -55,9 +52,15 @@
 				this.pageSize = val;
 				this.queryTable();
 			},
-			queryTabel() {}
+			queryTabel() {
+				this.$get("/admin/v1/contents?type=Lifepart", {}).then(response => {
+					this.tableData = response.data
+				})
+			}
 		},
-		created() {}
+		created() {
+			this.queryTabel()
+		}
 	}
 </script>
 <style lang="less" scoped>

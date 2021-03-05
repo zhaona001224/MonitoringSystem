@@ -39,7 +39,11 @@
 			}
 		},
 		methods: {
-			query() {},
+			getData() {
+				this.$get("/admin/v1/contents?type=Point", {}).then(response => {
+					console.log(response)
+				})
+			},
 			drawLine() {
 				let myChart = this.$echarts.init(document.getElementById("myChart"))
 				let option = {
@@ -75,7 +79,6 @@
 								color: '#333',
 								fontSize: 14,
 								lineHeight: 80,
-								
 							}
 						},
 						data: ['2020/06/11 14:00', '2020/06/11 14:58', '2020/06/11 14:58',
@@ -90,7 +93,6 @@
 							textStyle: {
 								color: '#333',
 								fontSize: 24,
-								
 							}
 						},
 					}],
@@ -145,6 +147,9 @@
 		},
 		mounted() {
 			this.drawLine()
+		},
+		created() {
+			this.getData()
 		}
 	}
 </script>
