@@ -12,6 +12,7 @@
 				<el-form ref="form" :model="form" :rules="rules" label-width="20%" label-position="right">
 					<el-form-item v-for="(item,index) in formData" :label="item&&item.name+''" :prop="item&&item.name"
 					 :key="index" v-if="item">
+				
 						<el-input style="width:800px" v-if="item.data.type=='input'&&item.name!='stock'"
 						 :placeholder="'请填写 '+item.name" maxlength="" v-model="form[item.name]"> </el-input>
 						<el-input style="width:800px" v-if="item.data.type=='input'&&item.name=='stock'"
@@ -20,26 +21,28 @@
 						<!--	{{formData}}-->
 						<el-tree :default-expand-all="true" v-if="item.data.type=='tree'" ref="tree"
 						 :props="defaultProps" style="width:800px" :data="item.data.source[0].name?item.data.source:[]"
-						 :key="item.data.id" :highlight-current="true" node-key="id" :label="item.name"
-						 :value="item.id" accordion @node-click="handleNodeClick"> </el-tree>
-						<el-select :clearable="true" @change="refreshData(subItem.name)"
+						 :key="item.data.ID" :highlight-current="true" node-key="id" :label="item.name"
+						 :value="item.ID" accordion @node-click="handleNodeClick"> </el-tree>
+						<el-select :clearable="true" 
 						 style="width:800px" multiple v-if="item.data.type=='multiselect'" v-model="form[item.name]"
 						 :placeholder="'请选择'+item.name">
-							<el-option v-for="subItem in item.data.source" :key="subItem.id" :label="subItem.name"
-							 :value="subItem.id"> </el-option>
+					
+							<el-option v-for="subItem in item.data.source" :key="subItem.ID" :label="subItem.name"
+							 :value="subItem.ID"></el-option>
 						</el-select>
-						<el-select :clearable="true" @click="judgeGame(subItem.name)" @change="refreshData"
+						<el-select :clearable="true" 
 						 style="width:800px" v-if="item.data.type=='select'" v-model="form[item.name]"
 						 :placeholder="'请选择'+item.name">
-							<el-option v-for="subItem in item.data.source" :key="subItem.id" :label="subItem.name"
-							 :value="subItem.id"> </el-option>
+						 
+							<el-option v-for="subItem in item.data.source" :key="subItem.ID" :label="subItem.name"
+							 :value="subItem.ID"> </el-option>
 						</el-select>
-						<el-radio-group v-if="item.data.type=='bool'" v-model="form[item.name]" @change="refreshData">
+						<el-radio-group v-if="item.data.type=='bool'" v-model="form[item.name]" >
 							<el-radio :label="item.data.source[0]?item.data.source[0]:true">{{item.data.source[0]?item.data.source[0]:true}}</el-radio>
 							<el-radio :label="item.data.source[1]?item.data.source[1]:false">{{item.data.source[1]?item.data.source[1]:false}}</el-radio>
 						</el-radio-group>
 						<el-radio-group v-if="item.data.type=='file'" v-model="picType[item.name]"
-						 @change="refreshData">
+						 >
 							<el-radio value="1" label="1">Select from Gallery</el-radio>
 							<el-radio value="2" label="2">Upload</el-radio>
 						</el-radio-group>
@@ -47,20 +50,20 @@
 						 type="date" placeholder="选择日期"> </el-date-picker>
 						<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-if="item.data.type=='time'" v-model="form[item.name]" type="datetime" placeholder="选择日期时间">
 						</el-date-picker>
-						<div style="display: inline-block" v-if="item.data.type=='file'"
+						<div  v-if="item.data.type=='file'"
 						 @click='activeKey=item.name'>
-							<el-select filterable clearable style="display: inline-block;width: 800px;margin:20px 0 "
+							<el-select filterable clearable style="display: block;width: 800px;margin:20px 0 "
 							 v-if="item.data.type=='file'&&picType[item.name]==1" v-model="form[item.name]"
 							 :placeholder="'请选择'+item.name">
-								<el-option v-for="subItem in picSource" :key="subItem.id" :label="subItem.name"
-								 :value="subItem.id"> </el-option>
+								<el-option v-for="subItem in picSource" :key="subItem.ID" :label="subItem.name"
+								 :value="subItem.ID"> </el-option>
 							</el-select>
-							<div style="position: relative;" v-if="form[item.name]&&picType[item.name]==1">
+							<div style="position: relative;dispaly:inline-block" v-if="form[item.name]&&picType[item.name]==1">
 							<img :src="imgUrl+form[item.name]" class="avatar" /> <span style="position: absolute;left: 130px;top:-14px;display: block;"
 								 class="el-upload-list__item-delete" @click="form[item.name]=''">
           <i class="el-icon-delete"></i>
         </span> </div>
-							<el-upload class="avatar-uploader" action="" :http-request="uploadImg"
+							<el-upload  style="position: relative;dispaly:inline-block" class="avatar-uploader" action="" :http-request="uploadImg"
 							 v-if="item.data.type=='file'&&picType[item.name]==2" :show-file-list="false"
 							 :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload"> <img v-if="form[item.name]" :src="imgUrl+form[item.name]" class="avatar">								<i v-else class="el-icon-plus avatar-uploader-icon"></i> </el-upload>
 						</div>
@@ -69,7 +72,7 @@
 						</div>
 						<el-popover v-if="dataSource.formData.data[item.name].helpText" placement="top-start"
 						 title="" trigger="hover" :content="dataSource.formData.data[item.name].helpText">
-						<i style="color: #666;margin-left:10px;" slot="reference" class="iconfont icon-tishi1"></i>							</el-popover>
+						<i style="color: #666;margin-left:10px;" slot="reference" class="iconfont icon-tishi1"></i></el-popover>							</el-popover>
 					</el-form-item>
 					<div class="cls"></div>
 					<div class="cls"></div>
@@ -120,14 +123,6 @@
 			refreshData(e) {
 				this.$forceUpdate();
 			},
-			judgeGame(e) {
-				if (e == "category" && this.dataSource.formData.data[e].source.length == 0) {
-					this.$message({
-						type: 'warning',
-						message: "Place Select Game"
-					});
-				}
-			},
 			changeSelect() {},
 			handlePictureCardPreview(file) {
 				this.dialogImageUrl = file.url;
@@ -164,7 +159,7 @@
 			},
 			//点击组织结构树，选择事件
 			handleNodeClick(obj) {
-				this.form.belongto = obj.id;
+				this.form.belongto = obj.ID;
 				this.$forceUpdate();
 			},
 			//获取图片库内容
@@ -196,7 +191,7 @@
 							}
 							if (this.form[key].toString().indexOf(',') > -1) return
 							var data = source.filter((item, index) => {
-								return item.id == this.form[key]
+								return item.ID == this.form[key]
 							})
 							form[key] = this.form[key] + "," + data[0].name
 						}
@@ -205,7 +200,7 @@
 							var array = [];
 							this.form[key].map((formItem) => {
 								var data = source.filter((item, index) => {
-									return item.id == formItem
+									return item.ID == formItem
 								})
 								array.push(formItem + "," + data[0].name)
 							})
@@ -221,8 +216,9 @@
 									form[key] = ''
 								}
 							}
+							delete form.timestamp
 							that.$post("/admin/v1/content/update?type=" + this.$route.params.key +
-								"&id=" + this.$route.query.id, form).then(response => {
+								"&ID=" + this.$route.query.id, form).then(response => {
 								if (response.retCode == 0) {
 									that.$util.successAlert("Modify Success！", '/template/list/' +
 										this.$route.params.key, 'return list');
@@ -254,10 +250,10 @@
 			},
 			getTreeList(data, fn) {
 				data && data.map((item, index) => {
-					if (!item.id) return
+					if (!item.ID) return
 					item.children = this.treeData.filter((subItem, index) => {
 						return parseInt(subItem.belongto && subItem.belongto.split(',')[0]) ==
-							item.id
+							item.ID
 					})
 					this.getTreeList(item.children)
 				})
@@ -268,7 +264,7 @@
 				var source = this.dataSource.formData.data['game'].source
 				if (source[0].name) {
 					var data = source.filter((item, index) => {
-						return item.id == this.form.game
+						return item.ID == this.form.game
 					})
 					var q = data[0].name
 				} else {
@@ -279,7 +275,7 @@
 						if (response.retCode == 0) {
 							response.data && response.data.map((item) => {
 								item.name = item.name + '-' + item.sname
-								item.id = item.id + ''
+								item.ID = item.ID + ''
 							})
 							this.treeData = response.data || [];
 							var Node1 = this.treeData && this.treeData.filter((item, index) => {
@@ -312,7 +308,7 @@
 				var source = this.dataSource.formData.data['game'].source
 				if (source[0].name) {
 					var data = source.filter((item, index) => {
-						return item.id == this.form.game
+						return item.ID == this.form.game
 					})
 					var q = data[0].name
 				} else {
@@ -322,7 +318,7 @@
 					if (response.retCode == 0) {
 						response.data && response.data.map((item) => {
 							item.name = item.name + '-' + item.sname
-							item.id = item.id + ''
+							item.ID = item.ID + ''
 						})
 						this.dataSource.formData.data[key].source = response.data || [];
 						this.$forceUpdate();
@@ -339,7 +335,7 @@
 				that.$get(url, {}).then(response => {
 					if (response.retCode == 0) {
 						response.data.map((item) => {
-							item.id = item.id + ''
+							item.ID = item.ID + ''
 						})
 						this.dataSource.formData.data[key].source = response.data || [];
 						//						this.getServeData('category');
@@ -470,9 +466,18 @@
 							if (this.dataSource.formData.data[key].type == "multiselect") {
 								if (this.form[key]) {
 									var data = [];
-									this.form[key] && JSON.parse(this.form[key]).map((item, index) => {
+									if(this.form[key]&&this.form[key].indexOf("[[")>-1){
+									this.form[key] && JSON.parse(this.form[key])[0].map((item, index) => {
+
 										data.push(item && item.split(',')[0])
 									})
+									}else{
+										this.form[key] && JSON.parse(this.form[key]).map((item, index) => {
+
+										data.push(item && item.split(',')[0])
+									})
+									}
+									
 									this.form[key] = data
 								}
 							}
