@@ -8,21 +8,21 @@
 		</el-card>
 		<div style="text-align: left;" class="el-upload-list el-upload-list--picture-card
 	">
-			<div style="position: relative;display: inline-block;" v-for="(item,index) in picSource" onload="getWidth(item)" :key="item.id">
+			<div style="position: relative;display: inline-block;" v-for="(item,index) in picSource" onload="getWIDth(item)" :key="item.ID">
 				<div class="el-upload-list__item is-ready">
 					<div>
-						<img class="el-upload-list__item-thumbnail" :src="imgUrl+item.id" alt="">
+						<img class="el-upload-list__item-thumbnail" :src="imgUrl+item.ID" alt="">
 						<span class="el-upload-list__item-actions">
         <span
           class="el-upload-list__item-preview"
-          @click="handlePictureCardPreview(imgUrl+item.id)"
+          @click="handlePictureCardPreview(imgUrl+item.ID)"
         >
           <i class="el-icon-zoom-in"></i>
         </span>
 						<!--<span class="el-upload-list__item-delete" @click="handleDownload(file)">
           <i class="el-icon-download"></i>
         </span>-->
-						<span class="el-upload-list__item-delete" @click="handleRemove(item.id)">
+						<span class="el-upload-list__item-delete" @click="handleRemove(item.ID)">
           <i class="el-icon-delete"></i>
         </span>
 						</span>
@@ -31,8 +31,8 @@
 
 				</div>
 
-				<div class="hidden-style" style="width: 148px;text-align: center;margin:0 0 10px">{{item.name}}</div>
-				<div class="hidden-style" style="width: 148px;text-align: center;margin:0 0 10px">({{item.width}}*{{item.height}})</div>
+				<div class="hIDden-style" style="wIDth: 148px;text-align: center;margin:0 0 10px">{{item.name}}</div>
+				<div class="hIDden-style" style="wIDth: 148px;text-align: center;margin:0 0 10px">({{item.wIDth}}*{{item.height}})</div>
 			</div>
 		</div>
 		<el-upload action="#" :show-file-list="false" :http-request="uploadImg" style="display: inline-block;">
@@ -40,7 +40,7 @@
 
 		</el-upload>
 		<el-dialog :visible.sync="dialogVisible">
-			<img width="100%" :src="dialogImageUrl" alt="">
+			<img wIDth="100%" :src="dialogImageUrl" alt="">
 		</el-dialog>
 	</div>
 </template>
@@ -58,8 +58,8 @@
 		},
 		methods: {
 
-			handleRemove(id) {
-				this.$delete("/admin/v1/file?id=" + id, {}).then(response => {
+			handleRemove(ID) {
+				this.$delete("/admin/v1/file?id=" + ID, {}).then(response => {
 					this.getPicData();
 				})
 			},
@@ -89,13 +89,13 @@
 				this.dialogImageUrl = file;
 				this.dialogVisible = true;
 			},
-			getWidth(item) {
+			getWIDth(item) {
 				var that=this;
 				var img = new Image();
-				img.src = this.imgUrl + item.id;
+				img.src = this.imgUrl + item.ID;
 				img.onload = function() {
 					item.height = img.height;
-					item.width = img.width;
+					item.wIDth = img.wIDth;
 					that.$forceUpdate();
 
 				};
@@ -110,7 +110,7 @@
 					if(response.retCode == 0) {
 						this.picSource = response.data;
 						this.picSource.map((item) => {
-							this.getWidth(item);
+							this.getWIDth(item);
 						})
 					} else {
 
@@ -145,6 +145,6 @@
 	}
 	
 	.search-input {
-		width: 500px
+		wIDth: 500px
 	}
 </style>
