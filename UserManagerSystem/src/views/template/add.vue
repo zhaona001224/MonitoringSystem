@@ -466,6 +466,9 @@
 							if (this.dataSource.formData.data[key].type == "multiselect") {
 								if (this.form[key]) {
 									var data = [];
+									if(this.form[key]==='a'){
+this.form[key]='[]'
+									}
 									if(this.form[key]&&this.form[key].indexOf("[[")>-1){
 									this.form[key] && JSON.parse(this.form[key])[0].map((item, index) => {
 
