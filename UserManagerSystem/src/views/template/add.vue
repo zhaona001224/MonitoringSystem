@@ -12,7 +12,6 @@
 				<el-form ref="form" :model="form" :rules="rules" label-width="20%" label-position="right">
 					<el-form-item v-for="(item,index) in formData" :label="item&&item.name+''" :prop="item&&item.name"
 					 :key="index" v-if="item">
-				
 						<el-input style="width:800px" v-if="item.data.type=='input'&&item.name!='stock'"
 						 :placeholder="'请填写 '+item.name" maxlength="" v-model="form[item.name]"> </el-input>
 						<el-input style="width:800px" v-if="item.data.type=='input'&&item.name=='stock'"
@@ -41,9 +40,9 @@
 							<el-radio :label="item.data.source[0]?item.data.source[0]:true">{{item.data.source[0]?item.data.source[0]:true}}</el-radio>
 							<el-radio :label="item.data.source[1]?item.data.source[1]:false">{{item.data.source[1]?item.data.source[1]:false}}</el-radio>
 						</el-radio-group>
-						<el-radio-group v-if="item.data.type=='file'" v-model="picType[item.name]"
+						<el-radio-group @change="refreshData" v-if="item.data.type=='file'" v-model="picType[item.name]"
 						 >
-							<el-radio value="1" label="1">Select from Gallery</el-radio>
+							<el-radio  value="1" label="1">Select from Gallery</el-radio>
 							<el-radio value="2" label="2">Upload</el-radio>
 						</el-radio-group>
 						<el-date-picker value-format="yyyy-MM-dd" v-if="item.data.type=='date'" v-model="form[item.name]"
