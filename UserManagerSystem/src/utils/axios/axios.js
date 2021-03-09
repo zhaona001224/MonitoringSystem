@@ -55,7 +55,10 @@ axios.interceptors.response.use(response => {
 	}
 	if(response.data && typeof response.data == "object") {
 		if(response.data.retCode === -1) {
-			errorMessaage(response.data.msg || response.data.message, true);
+			Vue.prototype.$message({
+				message: response.data.message,
+				type: 'error'
+			})
 			return Promise.reject(response);
 		}
 	}

@@ -20,7 +20,7 @@
 						<!--	{{formData}}-->
 						<el-tree :default-expand-all="true" v-if="item.data.type=='tree'" ref="tree"
 						 :props="defaultProps" style="width:800px" :data="item.data.source[0].name?item.data.source:[]"
-						 :key="item.data.id" :highlight-current="true" node-key="id" :label="item.name"
+						 :key="index" :highlight-current="true" node-key="id" :label="item.name"
 						 :value="item.id" accordion @node-click="handleNodeClick"> </el-tree>
 						<el-select :clearable="true" @change="refreshData(subItem.name)"
 						 style="width:800px" multiple v-if="item.data.type=='multiselect'" v-model="form[item.name]"
