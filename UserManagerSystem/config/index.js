@@ -12,7 +12,7 @@ module.exports = {
 		assetsPublicPath: '/',
 		proxyTable: {
 			'/api': {
-				target: 'http://216.24.249.93:8080',
+				target: 'http://support.bk.cloudns.cc:8080',
 				changeOrigin: true,
 				pathRewrite: {
 					'^/api': '' //重定向

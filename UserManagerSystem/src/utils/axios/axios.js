@@ -10,12 +10,12 @@ import Vue from 'vue'
 Vue.use(ElementUI);
 import crypto from "crypto";
 import * as types from '@/store/types'
-window.imgUrl = 'http://193.22.152.235:8080/admin/v1/file?id=';
-var config = "http://193.22.152.235:8080";
-//if(window.origin.indexOf('localhost') > -1) {
-//	var config = "/api";
-//	window.imgUrl = 'http://216.24.249.93:8080/admin/v1/file?id=';
-//}
+window.imgUrl = 'http://support.bk.cloudns.cc:8080/admin/v1/file?id=';
+var config = "http://support.bk.cloudns.cc:8080";
+if(window.origin.indexOf('localhost') > -1) {
+	var config = "/api";
+	window.imgUrl = 'http://support.bk.cloudns.cc:8080/admin/v1/file?id=';
+}
 /**
  * axios请求拦截器
  * @param {object} config axios请求配置对象

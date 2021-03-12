@@ -378,7 +378,7 @@
 					this['editor' + key].create(); // 创建富文本实例
 					console.log(this['editor' + key])
 					this['editor' + key].txt.html(that.form[key])
-				}, 1000)
+				}, 2000)
 			},
 		},
 		mounted() {

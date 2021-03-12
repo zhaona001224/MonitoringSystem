@@ -17,6 +17,8 @@ import axiosUtil from './utils/axios/axios'
 import clipboard from 'clipboard'
 import Centrifuge from 'centrifuge'
 import echarts from 'echarts'
+import Viewer from 'v-viewer'
+import 'viewerjs/dist/viewer.css'
 Vue.use(Vuex);
 Vue.use(Router);
 Vue.use(ElementUI);　　　
@@ -28,7 +30,8 @@ Vue.prototype.$delete = axiosUtil.axiosDelete;
 Vue.prototype.store = store;
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false;
-var centrifuge = new Centrifuge("ws://193.22.152.235:8000/connection/websocket", {
+Vue.use(Viewer);
+var centrifuge = new Centrifuge("ws://216.24.249.93:8000/connection/websocket", {
  
   debug: true
 });
@@ -37,13 +40,11 @@ centrifuge.connect();
 
 var subscription = centrifuge.subscribe("alarmdata", function (message) {
 console.log(message);
-
+console.log(1);
 								
 });
 var subscription = centrifuge.subscribe("keepdata", function (message) {
-	debugger
 store.commit(types.BASEDATA, message.data);
-console.log(message);
 });
 new Vue({
 	el: '#app',

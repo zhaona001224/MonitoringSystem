@@ -13,7 +13,7 @@
 		</div>
 		<div class="box-card">
 			<el-table :data="tableData" width="100%">
-				<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
+				<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
 				</el-table-column>
 				<el-table-column align="center" prop="name" label="零件名称"
 				 width="400px" cell-class-name="center" header-align="center"> </el-table-column>
@@ -31,7 +31,7 @@
 </template>
 <script>
 	export default {
-		name: 'maintenance',
+		name: 'LifePart',
 		data() {
 			return {
 				warmList: [{}],

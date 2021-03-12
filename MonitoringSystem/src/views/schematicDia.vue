@@ -1,14 +1,23 @@
 <template>
 	<div class="contain">
-		<div class="left" @click="clickGeneratePicture" ref="imageDom"> <img :src="require('@/assets/image/schematicDia/img'+(activeIndex+1)+'.jpg')" />
-			<div class="absolute-style" v-if="item.location" :style="'top:'+item.location[0]*100+'%;left:'+item.location[1]*100+'%'"
-			 v-for="(item,index) in rightList[activeIndex].deviceList"><img class="device-img" :src="imgUrl+item.pic" />
-				<div class="tip red">
-					<div class="tip-left"> <img src="../assets/image/schematicDia/redwarning.png" /> </div>
-					<div class="tip-right">
-						<div v-for="(subItem,subIndex) in item.point"> {{subItem.fullname}} {{subItem.datakey}}{{subItem.unit}} </div>
+		<viewer :options="options" @inited="inited" ref="viewer" :images="imgShow" v-if="imgShow.length>0">
+		<img style="display: none;" v-for="(item,index) in imgShow" :src="item" :key="index"
+			/> </viewer>
+		<div class="left" @click="clickGeneratePicture" ref="imageDom" v-if="rightList[activeIndex]">
+		<img :src="require('@/assets/image/schematicDia/'+(rightList[activeIndex].fullname)+'-Model.jpg')"
+			/>
+			<div :class="item.location[1]>0.8?'absolute-style left-style':'absolute-style'"
+			 v-if="item.location" :style="'top:'+item.location[0]*100+'%;left:'+item.location[1]*100+'%'"
+			 v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].deviceList"><img class="device-img" v-if="item.pic" :src="imgUrl+item.pic" />
+				<div>
+					<div class="tip green" v-if="item.point&&!item.notShowGreen">
+						<div class="tip-left"> <img src="../assets/image/schematicDia/greencheck.png" /> </div>
+						<div class="tip-right">
+							<div v-for="(subItem,subIndex) in item.point"> {{subItem.fullname}} {{$store.state.baseData[subItem.datakey]}}{{subItem.unit}}
+								</div>
+						</div>
+						<div class="close" @click="changeStatus(index,'Green')">×</div>
 					</div>
-					<div class="close">×</div>
 				</div>
 			</div>
 		</div>
@@ -18,8 +27,6 @@
 				<div :class="index===activeIndex?'li active':'li'"> {{item.fullname}} </div>
 				<div class="split" v-if="index!==activeIndex"></div>
 			</div>
-		</div>
-		<div class="pop" v-if="imgShow"> <img :src="imgShow"></img>
 		</div>
 	</div>
 </template>
@@ -32,15 +39,39 @@
 				rightList: [],
 				activeIndex: 1,
 				pointList: {},
-				imgShow: ''
+				imgShow: [],
+				options: {
+					"button": false,
+					"navbar": false,
+					"title": false,
+					"toolbar": false,
+					"tooltip": false,
+					"movable": true,
+					"zoomable": true,
+					"rotatable": true,
+					"scalable": true,
+					"transition": true,
+					"fullscreen": true
+				}
 			}
 		},
 		methods: {
+			inited(viewer) {
+				this.$viewer = viewer
+			},
+			close() {
+				this.imgShow = []
+			},
+			changeStatus(index, str) {
+				this.rightList[activeIndex]['notShow' + str] = !this.rightList[activeIndex]
+					['show' + str]
+				this.$forceUpdate()
+			},
 			getBaseData() {
 				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(
 					response => {
 						response.data.map((item) => {
-							this.pointList[item.id] = item
+							this.pointList[item.ID] = item
 						})
 					})
 				this.$get("/admin/v1/contents?type=Subsys&offset=-1&count=-1", {}).then(
@@ -48,13 +79,13 @@
 						this.imgUrl = window.imgUrl
 						response.data.sort((a, b) => {
 							//排序基于的数据
-							return a.id - b.id;
+							return a.ID - b.ID;
 						})
 						response.data.map((item) => {
 							item.deviceList = []
 							if (item.devices) {
 								var array = []
-								JSON.parse(item.devices)[0].map((subItem) => {
+								JSON.parse(item.devices).map((subItem) => {
 									array.push(subItem.split(',')[0])
 								})
 								item.devices = array
@@ -67,25 +98,20 @@
 							this.rightList.map((item, index) => {
 								response.data.map((subItem, index) => {
 									if (item.devices) {
-										subItem.id = subItem.id + ''
-										if (item.devices.indexOf(subItem.id) > -1) {
+										subItem.ID = subItem.ID + ''
+										if (item.devices.indexOf(subItem.ID) > -1) {
+											if (item.positions && item.positions != '--remove--') {
+												item.positions = item.positions.replace(/<[^>]+>/g, "");
+												subItem.location = JSON.parse(item.positions)[subItem.fullname]
+											}
+											var array = []
 											if (subItem.points) {
-												const array = []
-												JSON.parse(subItem.points[0])[0].map((childItem) => {
-													const id = childItem.split(',')[0]
-													childItem = this.pointList[id]
-													if (childItem) array.push(childItem)
+												JSON.parse(subItem.points).map((childItem) => {
+													array.push(this.pointList[childItem.split(',')[0]])
 												})
 												subItem.point = array
-												console.log(array)
 											}
 											item.deviceList.push(subItem)
-											if (subItem.description && subItem.description !=
-												'--remove--') {
-												subItem.description = subItem.description.replace(/<[^>]+>/g,
-													"");
-												subItem.location = JSON.parse(subItem.description)[item.fullname]
-											}
 										}
 									}
 								})
@@ -95,17 +121,24 @@
 				})
 			},
 			clickGeneratePicture() { //生成图片
-//				html2canvas(this.$refs.imageDom).then(canvas => {
-//					// 转成图片，生成图片地址
-//					debugger
-//					this.imgShow = canvas.toDataURL("image/png"); //可将 canvas 转为 base64 格式
-//				});
+				html2canvas(this.$refs.imageDom, {
+					width: 1346,
+					height: 934
+				}).then(canvas => {
+					this.imgShow = []
+					// 转成图片，生成图片地址
+					this.imgShow.push(canvas.toDataURL("image/png")); //可将 canvas 转为 base64 格式
+					//					console.log(this)
+					setTimeout(() => {
+						this.$viewer.show()
+					}, 500)
+				});
 			}
 		},
 		mounted() {},
 		created() {
+			console.log(this.$store.state.baseData)
 			this.getBaseData()
-			this.pointArray = this.$store.state
 		}
 	}
 </script>
@@ -116,13 +149,13 @@
 		top: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(0,0,0,0.6);
+		background: rgba(0, 0, 0, 0.6);
 		z-index: 100;
-		img{
+		img {
 			position: fixed;
 			left: 50%;
 			margin-left: -673px;
-			top:50%;
+			top: 50%;
 			margin-top: -467px;
 			width: 1346px;
 			height: 934px;
@@ -174,6 +207,7 @@
 						}
 					}
 					.tip-right {
+						min-width: 200px;
 						font-size: 16px;
 						font-weight: bold;
 						font-stretch: normal;
@@ -189,6 +223,12 @@
 					&.green {
 						background: url(../assets/image/schematicDia/green.png) no-repeat;
 						background-size: cover;
+					}
+				}
+				&.left-style {
+					.tip {
+						position: absolute;
+						left: -300px;
 					}
 				}
 			}
@@ -229,5 +269,34 @@
 				background: #e5e5e5;
 			}
 		}
+	}
+	
+	@keyframes fade {
+		from {
+			background: rgba(236,0,10,1);
+		}
+		50% {
+			background: rgba(236,0,10,0.2);
+		}
+		to {
+			background: rgba(236,0,10,1);
+		}
+	}
+	
+	@-webkit-keyframes fade {
+		from {
+			background: rgba(236,0,10,1);
+		}
+		50% {
+			background: rgba(236,0,10,0.2);
+		}
+		to {
+			background: rgba(236,0,10,1);
+		}
+	}
+	
+	.blink {
+		animation: fade 1500ms infinite;
+		-webkit-animation: fade 1500ms infinite;
 	}
 </style>
