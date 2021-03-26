@@ -10,11 +10,11 @@ import Vue from 'vue'
 Vue.use(ElementUI);
 import crypto from "crypto";
 import * as types from '@/store/types'
-window.imgUrl = 'http://support.bk.cloudns.cc:8080/admin/v1/file?id=';
-var config = "http://support.bk.cloudns.cc:8080";
+window.imgUrl = 'http://support.bk.cloudns.cc:8088/admin/v1/file?id=';
+var config = "http://support.bk.cloudns.cc:8088";
 if(window.origin.indexOf('localhost') > -1) {
 	var config = "/api";
-	window.imgUrl = 'http://support.bk.cloudns.cc:8080/admin/v1/file?id=';
+	window.imgUrl = 'http://support.bk.cloudns.cc:8088/admin/v1/file?id=';
 }
 /**
  * axios请求拦截器

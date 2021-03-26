@@ -11,7 +11,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="box-card">
+		<div class="box-card scroll-wrapper"  ref="bscroll"
 			<el-table :data="tableData" width="100%">
 				<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
 				</el-table-column>
@@ -19,19 +19,23 @@
 				 width="400px" cell-class-name="center" header-align="center"> </el-table-column>
 				<el-table-column align="center" prop="quantity" label="装机数"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="life" label="寿命 （年）"
+				<el-table-column align="center" prop="life" label="寿命 （月）"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="start" label="更换日期"
-				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
-				 <el-table-column align="center" prop="end" label="下次更换日期"
-				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="target" label="更换日期"
+				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+				 <el-table-column align="center" prop="next" label="下次更换日期"
+				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
 			</el-table>
 		</div>
 	</div>
 </template>
 <script>
+	import BScroll from 'better-scroll'
 	export default {
 		name: 'LifePart',
+		components: {
+			BScroll
+		},
 		data() {
 			return {
 				warmList: [{}],
@@ -42,21 +46,34 @@
 			}
 		},
 		methods: {
-			//选择页数
-			handleCurrentChange(val) {
-				this.pageNum = val
-				this.queryTable();
-			},
-			//选择每页条数
-			handleSizeChange(val) {
-				this.pageSize = val;
-				this.queryTable();
-			},
 			queryTabel() {
-				this.$get("/admin/v1/contents?type=Lifepart", {}).then(response => {
-					this.tableData = response.data
+				this.$get("/admin/v1/contents?type=Lifepart", {
+					offset:this.pageNum,
+					pageSize:this.pageSize
+				}).then(response => {
+					this.tableData = this.tableData.concat(response.data)
 				})
 			}
+		},
+		mounted(){
+			var self = this;
+			this.$nextTick(() => {
+				this.scroll = new BScroll(this.$refs.bscroll, {
+					click: true,
+					//上拉
+					pullUpLoad: {
+						threshold: -30
+					}
+
+				});
+				//上拉
+				this.scroll.on('pullingUp', () => {
+					if(self.tableData.length < self.total) {
+						self.pageNum++;
+						self.tableData();
+					}
+				})
+			})
 		},
 		created() {
 			this.queryTabel()
@@ -66,6 +83,9 @@
 <style lang="less" scoped>
 	.contain {
 		padding: 2px 21px;
+		height: 950px;
+		overflow-x: hidden;
+		overflow-y: auto;
 		.tab {
 			display: flex;
 			width: 1566px;

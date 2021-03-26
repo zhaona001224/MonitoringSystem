@@ -13,3 +13,8 @@
 		}
 	}
 </script>
+<style>
+	#app{
+		height: 1080px;
+	}
+</style>

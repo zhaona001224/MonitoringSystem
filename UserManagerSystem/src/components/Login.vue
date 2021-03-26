@@ -60,7 +60,7 @@
 
 				//登录
 				login: {
-					userName: "",//lq@163.com
+					userName: "",//ah@189.cn
 					userPwd: "" //qweasdzxc
 				},
 

@@ -20,7 +20,7 @@
 				<el-table-column header-align="left" sortable prop="ID" label="ID" width="60px">
 				</el-table-column>
 				<el-table-column v-for="(item,index) in formData" :key="item.ID"
-				 v-if="item&&item.name=='price'" :prop="item&&item.name" :label="item&&item.name"
+				 v-if="item&&item.name=='price'" :prop="item&&item.name" :label="item.data.alias||item.name"
 				 width="120px">
 					<template slot-scope="scope">
 						<el-input @keyup.enter.native="handleInputConfirm(scope.row.ID,scope.row.price)"
@@ -30,11 +30,11 @@
 				</el-table-column>
 				<el-table-column sortable :sortable="item&&item.name=='name'" v-for="(item,index) in formData"
 				 :key="item&&item.ID" v-if="item&&item.data.type!='textarea'&&item.data.type!='file'&&item.name!='price'"
-				 header-align="left" :prop="item&&item.name" :label="item&&item.name" :width="(item.name=='type'||item.name=='miniNumber'||item.name=='hotItem'||item.name=='online')?'110px':'140px'">
+				 header-align="left" :prop="item&&item.name" :label="item.data.alias||item.name" :width="(item.name=='type'||item.name=='miniNumber'||item.name=='hotItem'||item.name=='online')?'110px':'140px'">
 				</el-table-column>
 				<el-table-column v-for="(item,index) in formData" :key="item.ID"
 				 v-if="item&&item.data.type=='file'" cell-style="text-align:center" header-align="center"
-				 :prop="item&&item.name" :label="item&&item.name" width="120px">
+				 :prop="item&&item.name" :label="item.data.alias||item.name" width="120px">
 					<template slot-scope="scope"> <img v-if="scope.row[item&&item.name]" style="width: 80px;height: 80px;" :src="imgUrl+scope.row[item&&item.name]"
 						/> </template>
 				</el-table-column>

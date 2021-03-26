@@ -10,28 +10,28 @@
 		<el-card class="box-card">
 			<div class="align-center" style="width: 100%;">
 				<el-form ref="form" :model="form" :rules="rules" label-width="20%" label-position="right">
-					<el-form-item v-for="(item,index) in formData" :label="item&&item.name+''" :prop="item&&item.name"
+					<el-form-item v-for="(item,index) in formData" :label="item.data.alias||item.name" :prop="item&&item.name"
 					 :key="index" v-if="item">
 						<el-input style="width:800px" v-if="item.data.type=='input'&&item.name!='stock'"
-						 :placeholder="'请填写 '+item.name" maxlength="" v-model="form[item.name]"> </el-input>
+						 :placeholder="'请填写 '+item.data.alias||item.name" maxlength="" v-model="form[item.name]"> </el-input>
 						<el-input style="width:800px" v-if="item.data.type=='input'&&item.name=='stock'"
-						 :placeholder="'请填写 '+item.name" max="999999" maxlength="6" v-model="form[item.name]">
+						 :placeholder="'请填写 '+item.data.alias||item.name" max="999999" maxlength="6" v-model="form[item.name]">
 						</el-input>
 						<!--	{{formData}}-->
 						<el-tree :default-expand-all="true" v-if="item.data.type=='tree'" ref="tree"
 						 :props="defaultProps" style="width:800px" :data="item.data.source[0].name?item.data.source:[]"
-						 :key="item.data.ID" :highlight-current="true" node-key="id" :label="item.name"
+						 :key="item.data.ID" :highlight-current="true" node-key="id" :label="item.data.alias||item.name"
 						 :value="item.ID" accordion @node-click="handleNodeClick"> </el-tree>
 						<el-select :clearable="true" 
 						 style="width:800px" multiple v-if="item.data.type=='multiselect'" v-model="form[item.name]"
-						 :placeholder="'请选择'+item.name">
+						 :placeholder="'请选择'+item.data.alias||item.name">
 					
 							<el-option v-for="subItem in item.data.source" :key="subItem.ID" :label="subItem.name"
 							 :value="subItem.ID"></el-option>
 						</el-select>
 						<el-select :clearable="true" 
 						 style="width:800px" v-if="item.data.type=='select'" v-model="form[item.name]"
-						 :placeholder="'请选择'+item.name">
+						 :placeholder="'请选择'+item.data.alias||item.name">
 						 
 							<el-option v-for="subItem in item.data.source" :key="subItem.ID" :label="subItem.name"
 							 :value="subItem.ID"> </el-option>
@@ -53,7 +53,7 @@
 						 @click='activeKey=item.name'>
 							<el-select filterable clearable style="display: block;width: 800px;margin:20px 0 "
 							 v-if="item.data.type=='file'&&picType[item.name]==1" v-model="form[item.name]"
-							 :placeholder="'请选择'+item.name">
+							 :placeholder="'请选择'+item.data.alias||item.name">
 								<el-option v-for="subItem in picSource" :key="subItem.ID" :label="subItem.name"
 								 :value="subItem.ID"> </el-option>
 							</el-select>
