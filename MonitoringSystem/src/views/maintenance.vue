@@ -11,25 +11,31 @@
 				</div>
 			</div>
 		</div>
-		<div class="box-card">
-			<el-table :data="tableData" width="100%">
-				<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
-				</el-table-column>
-				<el-table-column align="center" prop="name" label="维保内容" width="610px"
-				 cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="duration" label="保养周期"
-				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="start" label="保养日期"
-				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="end" label="下次保养日期"
-				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
-			</el-table>
+		<div class="box-card scroll-wrapper" ref="bscroll">
+			<div>
+				<el-table :data="tableData" width="100%">
+					<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
+					</el-table-column>
+					<el-table-column align="center" prop="name" label="维保内容"
+					 width="610px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="duration" label="保养周期"
+					 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="start" label="保养日期"
+					 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="end" label="下次保养日期"
+					 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+				</el-table>
+			</div>
 		</div>
 	</div>
 </template>
 <script>
+	import BScroll from 'better-scroll'
 	export default {
 		name: 'maintenance',
+		components: {
+			BScroll
+		},
 		data() {
 			return {
 				warmList: [{}],
@@ -51,14 +57,45 @@
 				this.queryTable();
 			},
 			queryTabel() {
-				this.$get("/admin/v1/contents?type=Maintenance", {}).then(response => {
-					this.tableData = response.data
+				this.$get("/admin/v1/contents?type=Maintenance&offset=" + this.pageNum +
+					'&pageSize=' + this.pageSize, {}).then(response => {
+					const self = this
+					this.tableData = this.tableData.concat(response.data)
+					this.total = response.meta.total
+					if (this.scroll) return
+					this.$nextTick(() => {
+						this.scroll = new BScroll(this.$refs.bscroll, {
+							click: true,
+							//上拉
+							pullUpLoad: {
+								threshold: -30
+							}
+						});
+						//上拉
+						this.scroll.on('pullingUp', () => {
+							if (self.tableData.length < self.total) {
+								self.pageNum++;
+								self.queryTabel();
+							}
+						})
+					})
 				})
 			}
 		},
 		created() {
 			this.queryTabel()
-		}
+		},
+		watch: {
+			tableData: {
+				handler: function() {
+					if(this.scroll) {
+						this.scroll.finishPullUp();
+						this.scroll.refresh();
+					}
+				},
+				deep: true
+			}
+		},
 	}
 </script>
 <style lang="less" scoped>
@@ -126,6 +163,8 @@
 			margin-top: 20px;
 			box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
 			border-radius: 3px;
+			height: 740px;
+			overflow-y: auto;
 		}
 	}
 </style>

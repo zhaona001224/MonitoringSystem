@@ -9,9 +9,9 @@
 		</el-card>
 		<el-table :data="tableData" width="100%">
 			<el-table-column header-align="left" sortable prop="id" label="id"> </el-table-column>
-			<el-table-column header-align="left" prop="email" label="email">
+			<el-table-column header-align="left" prop="email" label="邮箱">
 			</el-table-column>
-			<el-table-column header-align="left" prop="admin" label="admin">
+			<el-table-column header-align="left" prop="admin" label="管理员">
 			</el-table-column>
 			<el-table-column label="operation" width="240px" cell-class-name="center"
 			 header-align="center">

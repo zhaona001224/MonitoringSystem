@@ -40,13 +40,40 @@
 				tableData: [{},{},{},{},{},{},{},{},{},{},{},{}]
 			}
 		},
-		methods: {},
+		methods: {
+			queryTabel() {
+				this.$get("/admin/v1/contents?type=Subsys", {}).then(response => {
+					const self=this
+					this.tableData = this.tableData.concat(response.data)
+					this.total=response.meta.total
+					if (this.scroll) return
+					this.$nextTick(() => {
+						this.scroll = new BScroll(this.$refs.bscroll, {
+							click: true,
+							//上拉
+							pullUpLoad: {
+								threshold: -30
+							}
+						});
+						//上拉
+						this.scroll.on('pullingUp', () => {
+							if (self.tableData.length < self.total) {
+								self.pageNum++;
+								self.queryTabel();
+							}
+						})
+					})
+				})
+			}
+		},
 		mounted() {
 			this.$nextTick(() => {
 				this.scroll = new BScroll(this.$refs.wrapper, {})
 			})
 		},
-		created() {}
+		created() {
+			this.queryTabel()
+		}
 	}
 </script>
 <style lang="less" scoped>

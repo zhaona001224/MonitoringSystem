@@ -40,7 +40,7 @@
 				</el-table-column>
 				<el-table-column sortable prop="updated" sortable label="updateTime" width="160px"
 				 cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column fixed="right" label="operation" min-width="240px"
+				<el-table-column fixed="right" label="操作" min-width="240px"
 				 cell-class-name="center" header-align="center">
 					<template slot-scope="scope">
 						<!--<el-button type="text" size="small" v-if="scope.row.online" @click="handleStatus(scope.row)">{{scope.row.online?'outLine':'online'}}</el-button>-->

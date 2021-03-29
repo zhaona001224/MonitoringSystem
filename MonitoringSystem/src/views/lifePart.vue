@@ -11,21 +11,24 @@
 				</div>
 			</div>
 		</div>
-		<div class="box-card scroll-wrapper"  ref="bscroll"
-			<el-table :data="tableData" width="100%">
+		<div class="box-card scroll-wrapper" ref="bscroll">
+			<div>
+					<el-table :data="tableData" width="100%">
 				<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
 				</el-table-column>
-				<el-table-column align="center" prop="name" label="零件名称"
-				 width="400px" cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="name" label="零件名称" width="400px"
+				 cell-class-name="center" header-align="center"> </el-table-column>
 				<el-table-column align="center" prop="quantity" label="装机数"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
 				<el-table-column align="center" prop="life" label="寿命 （月）"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
 				<el-table-column align="center" prop="target" label="更换日期"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
-				 <el-table-column align="center" prop="next" label="下次更换日期"
+				<el-table-column align="center" prop="next" label="下次更换日期"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
 			</el-table>
+		
+			</div>
 		</div>
 	</div>
 </template>
@@ -42,42 +45,50 @@
 				tableData: [],
 				pageNum: 1,
 				pageSize: 10,
-				total: 0
+				total: 0,
+				scroll: ''
 			}
 		},
 		methods: {
 			queryTabel() {
-				this.$get("/admin/v1/contents?type=Lifepart", {
-					offset:this.pageNum,
-					pageSize:this.pageSize
-				}).then(response => {
+				this.$get("/admin/v1/contents?type=Lifepart&offset="+this.pageNum+'&pageSize='+this.pageSize, {}).then(response => {
+					const self=this
 					this.tableData = this.tableData.concat(response.data)
+					this.total=response.meta.total
+					if (this.scroll) return
+					this.$nextTick(() => {
+						this.scroll = new BScroll(this.$refs.bscroll, {
+							click: true,
+							//上拉
+							pullUpLoad: {
+								threshold: -30
+							}
+						});
+						//上拉
+						this.scroll.on('pullingUp', () => {
+							if (self.tableData.length < self.total) {
+								self.pageNum++;
+								self.queryTabel();
+							}
+						})
+					})
 				})
 			}
 		},
-		mounted(){
-			var self = this;
-			this.$nextTick(() => {
-				this.scroll = new BScroll(this.$refs.bscroll, {
-					click: true,
-					//上拉
-					pullUpLoad: {
-						threshold: -30
-					}
-
-				});
-				//上拉
-				this.scroll.on('pullingUp', () => {
-					if(self.tableData.length < self.total) {
-						self.pageNum++;
-						self.tableData();
-					}
-				})
-			})
-		},
 		created() {
 			this.queryTabel()
-		}
+		},
+		watch: {
+			tableData: {
+				handler: function() {
+					if(this.scroll) {
+						this.scroll.finishPullUp();
+						this.scroll.refresh();
+					}
+				},
+				deep: true
+			}
+		},
 	}
 </script>
 <style lang="less" scoped>
@@ -148,7 +159,8 @@
 			margin-top: 20px;
 			box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
 			border-radius: 3px;
+			height: 740px;
+			overflow-y: auto;
 		}
-	
 	}
 </style>

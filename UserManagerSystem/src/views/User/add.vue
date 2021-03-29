@@ -12,11 +12,11 @@
 			<div class="align-center" style="width: 100%;">
 				<el-form ref="form" :model="form" :rules="rules" label-width="35%" label-position="right">
 					<el-form-item label="email：" prop="email">
-						<el-input placeholder="请填写 email" v-model="form.email">
+						<el-input placeholder="请填写邮箱" v-model="form.email">
 						</el-input>
 					</el-form-item>
 					<el-form-item label="password：" prop="password">
-						<el-input placeholder="请填写 password" type="password" v-model="form.password">
+						<el-input placeholder="请填写密码" type="password" v-model="form.password">
 						</el-input>
 					</el-form-item>
 					<div class="cls"></div>

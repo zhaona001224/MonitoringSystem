@@ -10,12 +10,24 @@ import Vue from 'vue'
 Vue.use(ElementUI);
 import crypto from "crypto";
 import * as types from '@/store/types'
-window.imgUrl = 'http://support.bk.cloudns.cc:8088/admin/v1/file?id=';
-var config = "http://support.bk.cloudns.cc:8088";
-if(window.origin.indexOf('localhost') > -1) {
-	var config = "/api";
-	window.imgUrl = 'http://support.bk.cloudns.cc:8088/admin/v1/file?id=';
+var RunMode = "test";
+var prdimgUrl = 'http://support.bk.cloudns.cc:8088/admin/v1/file?id=';
+var testimgUrl = 'http://127.0.0.1:8080/admin/v1/file?id=';
+var prdconfig = "http://support.bk.cloudns.cc:8088";
+var testconfig = "http://127.0.0.1:8080"
+var config = testconfig;
+if (RunMode == "test") {
+  window.imgUrl = testimgUrl;
+} else {
+  window.imgUrl = prdimgUrl;
+  config = prdconfig;
 }
+//window.imgUrl = 'http://support.bk.cloudns.cc:8088/admin/v1/file?id=';
+//var config = "http://support.bk.cloudns.cc:8088";
+//if(window.origin.indexOf('localhost') > -1) {
+//	var config = "/api";
+//	window.imgUrl = 'http://support.bk.cloudns.cc:8088/admin/v1/file?id=';
+//}
 /**
  * axios请求拦截器
  * @param {object} config axios请求配置对象
