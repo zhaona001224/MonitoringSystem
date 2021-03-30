@@ -7,7 +7,7 @@
 			{{item}}
 			</span><span v-if="index!==activeIndex&&index!==tabList.length-1" class="split"></span></div>
 		</div>
-		<div class="box-card" >
+		<div class="box-card">
 			<el-row v-if="activeIndex!==1">
 				<div v-if="activeIndex==0"> 测点
 					<el-select v-model="value" placeholder="请选择">
@@ -18,74 +18,67 @@
 				<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="start" type="datetime"
 				 placeholder="选择日期时间"> </el-date-picker> 结束
 				<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="end"
-				 type="datetime" placeholder="选择日期时间"> </el-date-picker>
+				 type="datetime" @change="judgeTime" placeholder="选择日期时间"> </el-date-picker>
 				<el-button type="primary" class="common-btn" @click="queryTabel">查询</el-button>
 			</el-row>
-	
-		<div class="table" v-if="activeIndex==0">
-			<el-table :data="tableData" width="100%">
-				<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
-				</el-table-column>
-				<el-table-column align="center" prop="updated" label="日期"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="时间"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="测点"
-				 width="530px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="运行值"
-				 width="360px" cell-class-name="center" header-align="center"> </el-table-column>
-			</el-table>
-			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page.sync="pageNum" :page-sizes="[5, 10, 20, 30]" :page-size="pageSize"
-			 layout="total, sizes, prev, pager, next, jumper" :total="total"> </el-pagination>
-		</div>
-		<div class="box-card" v-if="activeIndex==1">
-			<el-table :data="tableData" width="100%">
-				<el-table-column align="center" header-align="center" prop="id" label="编号" width="100px">
-				</el-table-column>
-				<el-table-column align="center" prop="updated" label="日期"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="时间"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="报警内容"
-				 width="430px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="报警级别"
-				 width="260px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column label="处理措施" min-width="140px" cell-class-name="center"
-				 header-align="center">
-					<template slot-scope="scope">
-						<div class="fix">预防检修 </div>
-						<div class="fix1">故障排除 </div>
-					</template>
-				</el-table-column>
-				<el-table-column label="故障确认" min-width="140px" cell-class-name="center" header-align="center">
-					<template slot-scope="scope">
-						<div class="confirm">确认 </div>
-					</template>
-				</el-table-column>
-			</el-table>
-			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page.sync="pageNum" :page-sizes="[5, 10, 20, 30]" :page-size="pageSize"
-			 layout="total, sizes, prev, pager, next, jumper" :total="total"> </el-pagination>
-		</div>
-		<div class="box-card" v-if="activeIndex==2">
-			<el-table :data="tableData" width="100%">
-				<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
-				</el-table-column>
-				<el-table-column align="center" prop="updated" label="日期"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="时间"
-				 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="报警内容"
-				 width="530px" cell-class-name="center" header-align="center"> </el-table-column>
-				<el-table-column align="center" prop="updated" label="报警级别"
-				 width="360px" cell-class-name="center" header-align="center"> </el-table-column>
-			</el-table>
-			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page.sync="pageNum" :page-sizes="[5, 10, 20, 30]" :page-size="pageSize"
-			 layout="total, sizes, prev, pager, next, jumper" :total="total"> </el-pagination>
-		</div>
+			<div class="table" v-if="activeIndex==0">
+				<el-table :data="tableData" width="100%">
+					<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
+					</el-table-column>
+					<el-table-column align="center" prop="updated" label="日期"
+					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="时间"
+					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="测点"
+					 width="530px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="运行值"
+					 width="360px" cell-class-name="center" header-align="center"> </el-table-column>
+				</el-table>
 			</div>
+			<div class="box-card" v-if="activeIndex==1">
+				<el-table :data="tableData" width="100%">
+					<el-table-column align="center" header-align="center" prop="id" label="编号" width="100px">
+					</el-table-column>
+					<el-table-column align="center" prop="updated" label="日期"
+					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="时间"
+					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="报警内容"
+					 width="430px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="报警级别"
+					 width="260px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column label="处理措施" min-width="140px" cell-class-name="center"
+					 header-align="center">
+						<template slot-scope="scope">
+							<div class="fix">预防检修 </div>
+							<div class="fix1">故障排除 </div>
+						</template>
+					</el-table-column>
+					<el-table-column label="故障确认" min-width="140px" cell-class-name="center" header-align="center">
+						<template slot-scope="scope">
+							<div class="confirm">确认 </div>
+						</template>
+					</el-table-column>
+				</el-table>
+				<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+				 :current-page.sync="pageNum" :page-sizes="[5, 10, 20, 30]" :page-size="pageSize"
+				 layout="total, sizes, prev, pager, next, jumper" :total="total"> </el-pagination>
+			</div>
+			<div class="box-card" v-if="activeIndex==2">
+				<el-table :data="tableData" width="100%">
+					<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
+					</el-table-column>
+					<el-table-column align="center" prop="updated" label="日期"
+					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="时间"
+					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="报警内容"
+					 width="530px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="updated" label="报警级别"
+					 width="360px" cell-class-name="center" header-align="center"> </el-table-column>
+				</el-table>
+			</div>
+		</div>
 	</div>
 </template>
 <script>
@@ -119,9 +112,29 @@
 				this.pageSize = val;
 				this.queryTable();
 			},
-			queryTabel() {}
+			//校验时间格式
+			judgeTime() {
+				if (!this.start || !this.end) return
+				const time1 = this.start.getTime()
+				const time2 = this.end.getTime()
+				if (time1 - time2 > 0) {
+					this.$message({
+						type: 'warning',
+						message: "开始时间不能大于结束时间"
+					});
+				}
+			},
+			queryTabel() {
+				this.$get("/admin/v1/contents?type=Logs&count=-1&start="+this.start+'&end='+this.end, {
+				}).then(response => {
+					this.tableData =response.data||[]
+					this.total = response.meta.total
+				})
+			}
 		},
-		created() {}
+		created() {
+			this.queryTabel()
+		}
 	}
 </script>
 <style lang="less" scoped>
@@ -203,7 +216,7 @@
 			box-shadow: 3px 4px 10px 0px rgba(90, 196, 98, 0.5);
 			border-radius: 4px;
 		}
-			/deep/ .el-table th {
+		/deep/ .el-table th {
 			background-color: #f7f7f7!important;
 		}
 		.common-btn {

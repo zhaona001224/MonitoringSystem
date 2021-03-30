@@ -1,20 +1,21 @@
 <template>
 	<div class="contain">
-		<div class="left" ref="wrapper">
+		<div class="left">
 			<ul class="table-style">
-				<li v-for="(item,index) in tableData" :key="index"> <span class="index">{{index+1}}</span> <span class="title">前高频舱密闭机柜回水流量(m3/h)</span>
+				<li v-if="rightList[activeIndex]&&rightList[activeIndex].positions" v-for="(item,index) in rightList[activeIndex].positions"
+				 :key="item"> <span class="index">{{index+1}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
 					<div class="value ">
-						<div class="color1">14.5</div>
+						<div class="color1">{{$store.state.baseData[pointList[item].datakey]}}</div>
 						<div class="sub-title">运行值</div>
 					</div>
 					<div class="split"></div>
 					<div class="value">
-						<div class="color2">21.7</div>
+						<div class="color2">{{getValue(item,0)}}</div>
 						<div class="sub-title">预警值</div>
 					</div>
 					<div class="split"></div>
 					<div class="value">
-						<div class="color3">20.0</div>
+						<div class="color3">{{getValue(item,1)}}</div>
 						<div class="sub-title">报警值</div>
 					</div>
 				</li>
@@ -22,57 +23,70 @@
 		</div>
 		<div class="right">
 			<div class="title"> 所属系统 </div>
-			<div :key="item" @click="activeIndex=index" v-for="(item,index) in rightList">
-				<div :class="index===activeIndex?'li active':'li'"> {{item}} </div>
+			<div :key="item.ID" @click="activeIndex=index" v-for="(item,index) in rightList">
+				<div :class="index===activeIndex?'li active':'li'"> {{item.fullname}} </div>
 				<div class="split" v-if="index!==activeIndex"></div>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
-	import BScroll from 'better-scroll'
 	export default {
 		name: 'parameterMon',
 		data() {
 			return {
-				rightList: ['淡水冷却系统', '海水冷却系统', '1#环控系统', '2#环控系统', '3#环控系统', '4#环控系统'],
-				activeIndex: 0,
-				tableData: [{},{},{},{},{},{},{},{},{},{},{},{}]
+				rightList: [],
+				activeIndex: 1,
+				tableData: [],
+				pointList: {}
 			}
 		},
 		methods: {
-			queryTabel() {
-				this.$get("/admin/v1/contents?type=Subsys", {}).then(response => {
-					const self=this
-					this.tableData = this.tableData.concat(response.data)
-					this.total=response.meta.total
-					if (this.scroll) return
-					this.$nextTick(() => {
-						this.scroll = new BScroll(this.$refs.bscroll, {
-							click: true,
-							//上拉
-							pullUpLoad: {
-								threshold: -30
-							}
-						});
-						//上拉
-						this.scroll.on('pullingUp', () => {
-							if (self.tableData.length < self.total) {
-								self.pageNum++;
-								self.queryTabel();
-							}
+			getValue(item, type) {
+				const obj = this.pointList[item]
+				const array = obj.data.split(',')
+				if (obj.direction === '+') {
+					return ('>' + array[type])
+				} else if (obj.direction === '-') {
+					return ('<' + array[type])
+				} else if (obj.direction === '=') {
+					if (type === 0) {
+						return ('>' + array[type])
+					} else {
+						return ('<' + array[type])
+					}
+				}
+			},
+			getBaseData() {
+				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(
+					response => {
+						response.data.map((item) => {
+							this.pointList[item.ID] = item
 						})
-					})
+					}).then(() => {
+					this.$get("/admin/v1/contents?type=Subsys&offset=-1&count=-1", {}).then(
+						response => {
+							this.imgUrl = window.imgUrl
+							response.data.sort((a, b) => {
+								//排序基于的数据
+								return a.ID - b.ID;
+							})
+							response.data.map((item) => {
+								if (item.positions) {
+									var array = []
+									JSON.parse(item.positions).map((subItem) => {
+										array.push(subItem.split(',')[0])
+									})
+									item.positions = array
+								}
+							})
+							this.rightList = response.data
+						})
 				})
-			}
-		},
-		mounted() {
-			this.$nextTick(() => {
-				this.scroll = new BScroll(this.$refs.wrapper, {})
-			})
+			},
 		},
 		created() {
-			this.queryTabel()
+			this.getBaseData()
 		}
 	}
 </script>
@@ -127,24 +141,23 @@
 					text-align: center;
 					font-family: Bahnschrift;
 					font-size: 48px;
-					.color1{
+					.color1 {
 						font-size: 48px;
 						color: #4081ff;
 					}
-					.color2{
+					.color2 {
 						font-size: 48px;
 						color: #aeb4be;
 					}
-					.color3{
+					.color3 {
 						font-size: 48px;
 						color: #fe4e46;
 					}
 					.sub-title {
-							color: #aeb4be;s
-						font-size: 18px;
+						color: #aeb4be;
+						s font-size: 18px;
 						font-weight: normal;
 						font-stretch: normal;
-						
 					}
 				}
 				.split {
