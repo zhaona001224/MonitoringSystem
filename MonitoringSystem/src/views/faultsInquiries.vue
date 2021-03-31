@@ -11,7 +11,7 @@
 			<el-row v-if="activeIndex!==1">
 				<div v-if="activeIndex==0"> 测点
 					<el-select v-model="value" placeholder="请选择">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+						<el-option v-for="item in options" :key="item.ID" :label="item.name" :value="item.ID">
 						</el-option>
 					</el-select>
 				</div> 开始
@@ -130,6 +130,13 @@
 					this.tableData =response.data||[]
 					this.total = response.meta.total
 				})
+			},
+			getBaseData(){
+				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(
+					response => {
+						this.options=response.data
+						
+					})
 			}
 		},
 		created() {
