@@ -100,9 +100,9 @@
 									if (item.devices) {
 										subItem.ID = subItem.ID + ''
 										if (item.devices.indexOf(subItem.ID) > -1) {
-											if (item.positions && item.positions != '--remove--') {
-												item.positions = item.positions.replace(/<[^>]+>/g, "");
-												subItem.location = JSON.parse(item.positions)[subItem.fullname]
+											if (item.deviceinfo && item.deviceinfo != '--remove--') {
+												item.deviceinfo = item.deviceinfo.replace(/<[^>]+>/g, "");
+												subItem.location = JSON.parse(item.deviceinfo)[subItem.fullname]
 											}
 											var array = []
 											if (subItem.points) {

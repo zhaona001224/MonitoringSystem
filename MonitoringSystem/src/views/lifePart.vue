@@ -5,9 +5,9 @@
 				<div> 寿命件到期提醒 </div>
 			</div>
 			<div class="right">
-				<div class="li" v-for="(item,index) in warmList">
-					<div class="text"><img src="../assets/image/maintenance/warning.png" /> 水泵润滑油补充 </div>
-					<div class="btn">确认</div>
+				<div class="li" v-for="(item,index) in $store.state.alarmData.lifes">
+					<div class="text"><img src="../assets/image/maintenance/warning.png" /> {{item.name}} </div>
+					<div class="btn" @click="confirmUpdate">确认</div>
 				</div>
 			</div>
 		</div>
@@ -41,7 +41,6 @@
 		},
 		data() {
 			return {
-				warmList: [{}],
 				tableData: [],
 				pageNum: 1,
 				pageSize: 10,
@@ -114,15 +113,18 @@
 				border-radius: 3px;
 				color: #666666;
 				font-size: 18px;
+				flex-shrink: 0;
 				& > div {
 					margin-top: 10px;
 				}
 			}
 			.right {
 				display: flex;
-				flex-wrap: nowrap;
+				flex-wrap: wrap;
 				padding: 36px;
-				min-height: 129px;
+				max-height: 129px;
+				overflow-y: auto;
+				justify-content: space-between;
 			}
 			.li {
 				display: flex;

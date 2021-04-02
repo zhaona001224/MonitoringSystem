@@ -140,7 +140,8 @@
 			}
 		},
 		created() {
-			this.queryTabel()
+			this.getBaseData()
+//			this.queryTabel()
 		}
 	}
 </script>

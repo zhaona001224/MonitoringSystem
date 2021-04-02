@@ -2,6 +2,7 @@
 	<div class="contain">
 		<div class="left">
 			<ul class="table-style">
+				
 				<li v-if="rightList[activeIndex]&&rightList[activeIndex].positions" v-for="(item,index) in rightList[activeIndex].positions"
 				 :key="item"> <span class="index">{{index+1}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
 					<div class="value ">

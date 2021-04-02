@@ -45,6 +45,10 @@ export default new Vuex.Store({
 		[types.BASEDATA]: (state, data) => {
 			localStorage.baseData = data;
 			state.baseData = data;
+		},
+		[types.ALARMDATA]: (state, data) => {
+			localStorage.alarmData = data;
+			state.alarmData = data;
 		}
 	}
 
