@@ -1,7 +1,7 @@
 <template>
 	<div class="contain">
 		<div class="tab">
-			<div class="li" @click="activeIndex=index" v-for="(item,index) in tabList" :key="index"><span class="li" :class="index==activeIndex?'active':''">
+			<div class="li" @click="changeTab(index)" v-for="(item,index) in tabList" :key="index"><span class="li" :class="index==activeIndex?'active':''">
 			<img v-if="index===activeIndex" :src="require('../assets/image/faultsInquiries/tab'+(index+1)+'-1.png')"/>
 			<img v-else :src="require('../assets/image/faultsInquiries/tab'+(index+1)+'.png')"/>
 			{{item}}
@@ -10,7 +10,7 @@
 		<div class="box-card">
 			<el-row v-if="activeIndex!==1">
 				<div v-if="activeIndex==0"> 测点
-					<el-select v-model="value" placeholder="请选择">
+					<el-select v-model="point" placeholder="请选择">
 						<el-option v-for="item in options" :key="item.ID" :label="item.name" :value="item.ID">
 						</el-option>
 					</el-select>
@@ -43,9 +43,9 @@
 					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="updated" label="时间"
 					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="报警内容"
+					<el-table-column align="center" prop="name" label="报警内容"
 					 width="430px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="报警级别"
+					<el-table-column align="center" prop="type" label="报警级别"
 					 width="260px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column label="处理措施" min-width="140px" cell-class-name="center"
 					 header-align="center">
@@ -60,9 +60,7 @@
 						</template>
 					</el-table-column>
 				</el-table>
-				<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-				 :current-page.sync="pageNum" :page-sizes="[5, 10, 20, 30]" :page-size="pageSize"
-				 layout="total, sizes, prev, pager, next, jumper" :total="total"> </el-pagination>
+			
 			</div>
 			<div class="box-card" v-if="activeIndex==2">
 				<el-table :data="tableData" width="100%">
@@ -98,7 +96,7 @@
 				end: '',
 				total: 0,
 				options: [],
-				value: ''
+				point: ''
 			}
 		},
 		methods: {
@@ -125,7 +123,8 @@
 				}
 			},
 			queryTabel() {
-				this.$get("/admin/v1/contents?type=Logs&count=-1&start="+this.start+'&end='+this.end, {
+				const param=encodeURI("point:"+this.point+" start:"+this.start+' end:'+this.end)
+				this.$get("/admin/v1/contents?type=Logs&count=-1&&q="+param, {
 				}).then(response => {
 					this.tableData =response.data||[]
 					this.total = response.meta.total
@@ -137,11 +136,24 @@
 						this.options=response.data
 						
 					})
+			},
+			changeTab(index){
+				this.activeIndex=index
+				if(index===1){
+this.tableData=this.$store.state.alarmData.alarms||[]
+this.tableData.map((item)=>{
+item.updated = this.$util.formatTime(item.updated,
+								'YYYY-MM-DD HH:mm:ss');
+})
+
+				}else{
+					this.queryTabel()
+				}
 			}
 		},
 		created() {
 			this.getBaseData()
-//			this.queryTabel()
+			// this.queryTabel()
 		}
 	}
 </script>

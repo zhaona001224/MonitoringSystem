@@ -44,6 +44,7 @@ console.log(message.data)
 								
 });
 var subscription = centrifuge.subscribe("keepdata", function (message) {
+	console.log(message.data)
 store.commit(types.BASEDATA, message.data);
 });
 new Vue({

@@ -10,8 +10,8 @@
 		<div class="box-card">
 			<el-row>
 				<div v-if="activeIndex==0"> 测点
-					<el-select v-model="value" placeholder="请选择">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+					<el-select v-model="point" placeholder="请选择">
+						<el-option v-for="item in options" :key="item.ID" :label="item.name" :value="item.datakey">
 						</el-option>
 					</el-select>
 				</div> 开始
@@ -35,13 +35,35 @@
 				start: '',
 				end: '',
 				options: [],
-				value: ''
+				point: ''
 			}
 		},
 		methods: {
 			getData() {
 				this.$get("/admin/v1/contents?type=Point", {}).then(response => {
-					console.log(response)
+					this.options=response.data
+					this.point=response.data[0]&&response.data[0].datakey
+					 this.queryTabel()
+				})
+			},
+			//校验时间格式
+			judgeTime() {
+				if (!this.start || !this.end) return
+				const time1 = this.start.getTime()
+				const time2 = this.end.getTime()
+				if (time1 - time2 > 0) {
+					this.$message({
+						type: 'warning',
+						message: "开始时间不能大于结束时间"
+					});
+				}
+			},
+			queryTabel() {
+				this.$get("/log/history/"+this.point+'?start='+this.start.getTime()+'&end='+this.end.getTime(), {
+				}).then(response => {
+					this.tableData =response.data||[]
+					this.total = response.meta.total
+
 				})
 			},
 			drawLine() {
@@ -149,7 +171,10 @@
 			this.drawLine()
 		},
 		created() {
+			this.start = new Date(new Date().setHours(0, 0, 0, 0)); //获取当天零点的时间
+			this.end = new Date(new Date().setHours(0, 0, 0, 0) + 12 * 60 * 60 * 1000 ); //获取当天23:59:59的时间
 			this.getData()
+			
 		}
 	}
 </script>

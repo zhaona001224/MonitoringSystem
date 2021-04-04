@@ -5,7 +5,7 @@
 				<div> 寿命件到期提醒 </div>
 			</div>
 			<div class="right">
-				<div class="li" v-for="(item,index) in $store.state.alarmData.lifes">
+				<div class="li"  v-for="(item,index) in  $store.state.alarmData&&$store.state.alarmData.lifes" :key="index">
 					<div class="text"><img src="../assets/image/maintenance/warning.png" /> {{item.name}} </div>
 					<div class="btn" @click="confirmUpdate">确认</div>
 				</div>
@@ -161,8 +161,8 @@
 			margin-top: 20px;
 			box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
 			border-radius: 3px;
-			height: 740px;
-			overflow-y: auto;
+			height: 728px;
+			overflow-y: hidden;
 		}
 	}
 </style>

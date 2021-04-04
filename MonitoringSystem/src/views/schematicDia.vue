@@ -137,7 +137,7 @@
 		},
 		mounted() {},
 		created() {
-			console.log(this.$store.state.baseData)
+			console.log(this.$store.state.alarmData)
 			this.getBaseData()
 		}
 	}
