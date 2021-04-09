@@ -169,19 +169,27 @@
 				var obj = {
 					cmd: 'cmd',
 					alarmclass: 'A',
-					data: this.activObj
+					data: JSON.stringify(this.activObj)
 				}
-				const that=this
-				this.centrifuge.publish("ack", obj).then(function(res) {
-					debugger
+				const that = this
+				this.centrifuge.publish("alarmdata", obj).then(function(res) {
 					that.showTip = false
 					that.$message({
 						message: '操作成功!',
 						type: 'success'
 					})
+					this.tableData = this.$store.state.alarmData.alarms || []
+					this.dealData()
+				
 				}, function(err) {
 					console.log('publish error', err);
 				});
+			}
+		},
+		watch: {
+			'$store.state.alarmData.alarms' (newName, oldName) {
+				this.tableData = this.$store.state.alarmData.alarms || []
+					this.dealData()
 			}
 		},
 		created() {
