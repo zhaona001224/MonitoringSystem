@@ -1,15 +1,15 @@
 <template>
 	<div class="contain">
 		<div class="tab">
-			<div class="li" @click="activeIndex=index" v-for="(item,index) in tabList" :key="index"><span class="li" :class="index==activeIndex?'active':''">
+			<div class="li" @click="changeTab(index)" v-for="(item,index) in tabList" :key="index"><span class="li" :class="index==activeIndex?'active':''">
 			<img v-if="index===activeIndex" :src="require('../assets/image/faultsInquiries/tab'+(index+1)+'-1.png')"/>
 			<img v-else :src="require('../assets/image/faultsInquiries/tab'+(index+1)+'.png')"/>
 			{{item}}
 			</span><span v-if="index!==activeIndex&&index!==tabList.length-1" class="split"></span></div>
 		</div>
 		<div class="box-card">
-			<el-row>
-				<div v-if="activeIndex==0"> 测点
+			<el-row v-if="activeIndex!=1">
+				<div > 测点
 					<el-select v-model="point" placeholder="请选择">
 						<el-option v-for="item in options" :key="item.ID" :label="item.name" :value="item.datakey">
 						</el-option>
@@ -19,9 +19,9 @@
 				 placeholder="选择日期时间"> </el-date-picker> 结束
 				<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="end"
 				 type="datetime" placeholder="选择日期时间"> </el-date-picker>
-				<el-button type="primary" class="common-btn" @click="query">显示</el-button>
+				<el-button type="primary" class="common-btn" @click="queryTabel">显示</el-button>
 			</el-row>
-			<div class="chart" id="myChart"> </div>
+			<div v-if="tableData.length>0" class="chart" id="myChart"> </div>
 		</div>
 	</div>
 </template>
@@ -35,15 +35,21 @@
 				start: '',
 				end: '',
 				options: [],
-				point: ''
+				tableData:[],
+				point: '',
+				echartData: {},
+				pointData: {}
 			}
 		},
 		methods: {
 			getData() {
 				this.$get("/admin/v1/contents?type=Point", {}).then(response => {
-					this.options=response.data
-					this.point=response.data[0]&&response.data[0].datakey
-					 this.queryTabel()
+					this.options = response.data
+					this.options.map((item) => {
+						this.pointData[item.datakey] = item
+					})
+					this.point = response.data[0] && response.data[0].datakey
+					this.queryTabel()
 				})
 			},
 			//校验时间格式
@@ -58,12 +64,45 @@
 					});
 				}
 			},
+			changeTab(index) {
+				this.activeIndex = index
+				if (index === 1) {
+					this.tableData = this.$store.state.alarmData.alarms || []
+					this.dealData()
+				}else{
+					this.queryTabel()
+				}
+			},
+			dealData() {
+				this.echartData.data1 = []
+				this.echartData.data2 = []
+				this.echartData.data3 = []
+				this.echartData.data4 = []
+				this.tableData.map((item) => {
+					const datetime = new Date(item.timestamp)
+					const year = datetime.getFullYear()
+					const month = ("0" + (datetime.getMonth() + 1)).slice(-2)
+					const date = ("0" + datetime.getDate()).slice(-2)
+					const hour = ("0" + datetime.getHours()).slice(-2)
+					const minute = ("0" + datetime.getMinutes()).slice(-2)
+					const second = ("0" + datetime.getSeconds()).slice(-2)
+					item.date = year + "-" + month + '-' + date
+					item.time = hour + ':' + minute + ':' + second
+					const array = this.pointData[this.point].data.split(',')
+					this.echartData.data1.push(item.date + ' ' + item.time)
+					this.echartData.data2.push(item[this.point])
+					this.echartData.data3.push(array[0])
+					this.echartData.data4.push(array[1])
+				})
+				if(this.tableData.length>0) this.drawLine()
+				
+			},
 			queryTabel() {
-				this.$get("/log/history/"+this.point+'?start='+this.start.getTime()+'&end='+this.end.getTime(), {
-				}).then(response => {
-					this.tableData =response.data||[]
-					this.total = response.meta.total
-
+				const url = this.activeIndex === 0 ? "/log/history/" : "/alarm/history/"
+				this.$get(url + this.point + '?start=' + this.start.getTime() + '&end=' +
+					this.end.getTime(), {}).then(response => {
+					this.tableData = response.data || []
+					this.dealData()
 				})
 			},
 			drawLine() {
@@ -103,10 +142,7 @@
 								lineHeight: 80,
 							}
 						},
-						data: ['2020/06/11 14:00', '2020/06/11 14:58', '2020/06/11 14:58',
-							'2020/06/11 14:58', '2020/06/11 14:59', '2020/06/11 13:02',
-							'2020/06/11 13:06'
-						]
+						data: this.echartData.data1
 					}],
 					yAxis: [{
 						type: 'value',
@@ -141,10 +177,10 @@
 						emphasis: {
 							focus: 'series'
 						},
-						data: [140, 232, 101, 264, 90, 340, 250],
+						data: this.echartData.data2,
 					}, {
 						name: '预警线',
-						data: [100, 100, 100, 100, 100, 100, 100],
+						data: this.echartData.data3,
 						type: 'line',
 						symbolSize: 0,
 						lineStyle: {
@@ -154,7 +190,7 @@
 						}
 					}, {
 						name: '报警线',
-						data: [300, 300, 300, 300, 300, 300, 300],
+						data: this.echartData.data4,
 						type: 'line',
 						symbolSize: 0,
 						lineStyle: {
@@ -167,14 +203,10 @@
 				myChart.setOption(option);
 			}
 		},
-		mounted() {
-			this.drawLine()
-		},
 		created() {
-			this.start = new Date(new Date().setHours(0, 0, 0, 0)); //获取当天零点的时间
-			this.end = new Date(new Date().setHours(0, 0, 0, 0) + 12 * 60 * 60 * 1000 ); //获取当天23:59:59的时间
+			this.start = new Date(new Date().setHours(0, 0, 0, 0) -  60 * 60 * 1000); //获取当天零点的时间
+			this.end = new Date(); //获取当天23:59:59的时间
 			this.getData()
-			
 		}
 	}
 </script>
@@ -197,6 +229,7 @@
 				font-size: 20px;
 				color: #b3b3b3;
 				justify-content: center;
+				
 				img {
 					margin-right: 8px;
 				}

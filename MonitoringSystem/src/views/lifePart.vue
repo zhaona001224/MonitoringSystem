@@ -5,15 +5,17 @@
 				<div> 寿命件到期提醒 </div>
 			</div>
 			<div class="right">
-				<div class="li"  v-for="(item,index) in  $store.state.alarmData&&$store.state.alarmData.lifes" :key="index">
+				<div class="li" v-for="(item,index) in  $store.state.alarmData&&$store.state.alarmData.lifes"
+				 :key="index">
 					<div class="text"><img src="../assets/image/maintenance/warning.png" /> {{item.name}} </div>
-					<div class="btn" @click="confirmUpdate">确认</div>
-				</div>
+					<div
+					 class="btn" @click="fix(item)">确认</div>
 			</div>
 		</div>
-		<div class="box-card scroll-wrapper" ref="bscroll">
-			<div>
-					<el-table :data="tableData" width="100%">
+	</div>
+	<div class="box-card scroll-wrapper" ref="bscroll">
+		<div>
+			<el-table :data="tableData" width="100%">
 				<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
 				</el-table-column>
 				<el-table-column align="center" prop="name" label="零件名称" width="400px"
@@ -27,9 +29,12 @@
 				<el-table-column align="center" prop="next" label="下次更换日期"
 				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
 			</el-table>
-		
-			</div>
 		</div>
+	</div>
+	<el-dialog title="" :visible.sync="showTip" width="30%"> <span>是否确认故障</span> <span slot="footer" class="dialog-footer">
+    <el-button @click="showTip = false">取 消</el-button>
+    <el-button type="primary" @click="sendData">确 定</el-button>
+  </span> </el-dialog>
 	</div>
 </template>
 <script>
@@ -49,11 +54,23 @@
 			}
 		},
 		methods: {
+			fix(item) {
+				this.activObj = item
+				this.showTip = true
+			},
+			sendData() {
+				this.centrifuge.publish("ack", this.activObj).then(function(res) {
+					console.log('successfully published');
+				}, function(err) {
+					console.log('publish error', err);
+				});
+			},
 			queryTabel() {
-				this.$get("/admin/v1/contents?type=Lifepart&offset="+this.pageNum+'&pageSize='+this.pageSize, {}).then(response => {
-					const self=this
+				this.$get("/admin/v1/contents?type=Lifepart&offset=" + this.pageNum +
+					'&pageSize=' + this.pageSize, {}).then(response => {
+					const self = this
 					this.tableData = this.tableData.concat(response.data)
-					this.total=response.meta.total
+					this.total = response.meta.total
 					if (this.scroll) return
 					this.$nextTick(() => {
 						this.scroll = new BScroll(this.$refs.bscroll, {
@@ -80,7 +97,7 @@
 		watch: {
 			tableData: {
 				handler: function() {
-					if(this.scroll) {
+					if (this.scroll) {
 						this.scroll.finishPullUp();
 						this.scroll.refresh();
 					}

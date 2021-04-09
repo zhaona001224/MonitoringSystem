@@ -23,6 +23,7 @@ Vue.use(Vuex);
 Vue.use(Router);
 Vue.use(ElementUI);　　　
 Vue.prototype.clipboard = clipboard;
+
 Vue.prototype.$util = util;
 Vue.prototype.$get = axiosUtil.axiosGet;
 Vue.prototype.$post = axiosUtil.axiosPost;
@@ -32,21 +33,22 @@ Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false;
 Vue.use(Viewer);
 var centrifuge = new Centrifuge("ws://216.24.249.93:8000/connection/websocket", {
- 
-  debug: true
+
+	debug: true
 });
 
 centrifuge.connect();
 
-var subscription = centrifuge.subscribe("alarmdata", function (message) {
-store.commit(types.ALARMDATA, message.data);
-console.log(message.data)
-								
-});
-var subscription = centrifuge.subscribe("keepdata", function (message) {
+var subscription = centrifuge.subscribe("alarmdata", function(message) {
+	store.commit(types.ALARMDATA, message.data);
 	console.log(message.data)
-store.commit(types.BASEDATA, message.data);
+
 });
+var subscription = centrifuge.subscribe("keepdata", function(message) {
+	console.log(message.data)
+	store.commit(types.BASEDATA, message.data);
+});
+Vue.prototype.centrifuge = centrifuge;
 new Vue({
 	el: '#app',
 	axios,

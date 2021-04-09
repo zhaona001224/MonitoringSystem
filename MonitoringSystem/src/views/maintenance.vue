@@ -5,28 +5,34 @@
 				<div> 维护保养提醒 </div>
 			</div>
 			<div class="right">
-				<div class="li" v-for="(item,index) in warmList">
-					<div class="text"><img src="../assets/image/maintenance/warning.png" /> 水泵润滑油补充 </div>
-					<div class="btn">确认</div>
-				</div>
+				<div class="li" v-for="(item,index) in  $store.state.alarmData&&$store.state.alarmData.maintains"
+				 :key="index">
+					<div class="text"><img src="../assets/image/maintenance/warning.png" /> {{item.name}} </div>
+					<div
+					 class="btn" @click="fix(item)">确认</div>
 			</div>
 		</div>
-		<div class="box-card scroll-wrapper" ref="bscroll">
-			<div>
-				<el-table :data="tableData" width="100%">
-					<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
-					</el-table-column>
-					<el-table-column align="center" prop="name" label="维保内容"
-					 width="610px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="duration" label="保养周期"
-					 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="start" label="保养日期"
-					 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="end" label="下次保养日期"
-					 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
-				</el-table>
-			</div>
+	</div>
+	<div class="box-card scroll-wrapper" ref="bscroll">
+		<div>
+			<el-table :data="tableData" width="100%">
+				<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
+				</el-table-column>
+				<el-table-column align="center" prop="name" label="维保内容" width="610px"
+				 cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="duration" label="保养周期"
+				 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="start" label="保养日期"
+				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+				<el-table-column align="center" prop="end" label="下次保养日期"
+				 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+			</el-table>
 		</div>
+	</div>
+	<el-dialog title="" :visible.sync="showTip" width="30%"> <span>是否确认故障</span> <span slot="footer" class="dialog-footer">
+    <el-button @click="showTip = false">取 消</el-button>
+    <el-button type="primary" @click="sendData">确 定</el-button>
+  </span> </el-dialog>
 	</div>
 </template>
 <script>
@@ -38,11 +44,12 @@
 		},
 		data() {
 			return {
-				warmList: [{}],
+				warmList: [],
 				tableData: [],
 				pageNum: 1,
 				pageSize: 10,
-				total: 0
+				total: 0,
+				showTip: false
 			}
 		},
 		methods: {
@@ -55,6 +62,22 @@
 			handleSizeChange(val) {
 				this.pageSize = val;
 				this.queryTable();
+			},
+			fix(item) {
+				this.activObj = item
+				this.showTip = true
+			},
+			sendData() {
+				var obj = {
+					cmd: 'cmd',
+					alarmclass: 'M',
+					data: this.activObj
+				}
+				this.centrifuge.publish("ack", obj).then(function(res) {
+					console.log('successfully published');
+				}, function(err) {
+					console.log('publish error', err);
+				});
 			},
 			queryTabel() {
 				this.$get("/admin/v1/contents?type=Maintenance&offset=" + this.pageNum +
@@ -88,7 +111,7 @@
 		watch: {
 			tableData: {
 				handler: function() {
-					if(this.scroll) {
+					if (this.scroll) {
 						this.scroll.finishPullUp();
 						this.scroll.refresh();
 					}
@@ -124,9 +147,11 @@
 			}
 			.right {
 				display: flex;
-				flex-wrap: nowrap;
+				flex-wrap: wrap;
 				padding: 36px;
-				min-height: 129px;
+				max-height: 129px;
+				overflow-y: auto;
+				justify-content: space-between;
 			}
 			.li {
 				display: flex;

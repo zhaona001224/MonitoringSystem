@@ -23,46 +23,45 @@
 			</el-row>
 			<div class="table" v-if="activeIndex==0">
 				<el-table :data="tableData" width="100%">
-					<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
+					<el-table-column align="center" header-align="center" prop="ID" label="编号" width="200px">
 					</el-table-column>
-					<el-table-column align="center" prop="updated" label="日期"
-					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="时间"
-					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="测点"
-					 width="530px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="运行值"
-					 width="360px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="date" label="日期" width="200px"
+					 cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="time" label="时间" width="200px"
+					 cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="key" label="测点" width="510px"
+					 cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="value" label="运行值"
+					 width="430px" cell-class-name="center" header-align="center"> </el-table-column>
 				</el-table>
 			</div>
-			<div class="box-card" v-if="activeIndex==1">
+			<div class="table" v-if="activeIndex==1">
 				<el-table :data="tableData" width="100%">
 					<el-table-column align="center" header-align="center" prop="id" label="编号" width="100px">
 					</el-table-column>
-					<el-table-column align="center" prop="updated" label="日期"
-					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="时间"
-					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="date" label="日期" width="200px"
+					 cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="time" label="时间" width="200px"
+					 cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="name" label="报警内容"
 					 width="430px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="type" label="报警级别"
-					 width="260px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column label="处理措施" min-width="140px" cell-class-name="center"
+					 width="160px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column label="处理措施" min-width="240px" cell-class-name="center"
 					 header-align="center">
 						<template slot-scope="scope">
-							<div class="fix">预防检修 </div>
-							<div class="fix1">故障排除 </div>
+							<el-popover placement="top-start" title="" width="200" trigger="click" :content="pointData[scope.row.rel].instruction">
+							<span class="fix" slot="reference">预防检修 </span> </el-popover>
 						</template>
 					</el-table-column>
 					<el-table-column label="故障确认" min-width="140px" cell-class-name="center" header-align="center">
 						<template slot-scope="scope">
-							<div class="confirm">确认 </div>
+							<div class="confirm" @click="fix(scope.row)">确认 </div>
 						</template>
 					</el-table-column>
 				</el-table>
-			
 			</div>
-			<div class="box-card" v-if="activeIndex==2">
+			<div class="table" v-if="activeIndex==2">
 				<el-table :data="tableData" width="100%">
 					<el-table-column align="center" header-align="center" prop="id" label="编号" width="200px">
 					</el-table-column>
@@ -76,6 +75,10 @@
 					 width="360px" cell-class-name="center" header-align="center"> </el-table-column>
 				</el-table>
 			</div>
+			<el-dialog title="" :visible.sync="showTip" width="30%"> <span>是否确认故障</span> <span slot="footer" class="dialog-footer">
+    <el-button @click="showTip = false">取 消</el-button>
+    <el-button type="primary" @click="sendData">确 定</el-button>
+  </span> </el-dialog>
 		</div>
 	</div>
 </template>
@@ -96,20 +99,13 @@
 				end: '',
 				total: 0,
 				options: [],
-				point: ''
+				point: '',
+				pointData: {},
+				showTip: false,
+				activeObj: {}
 			}
 		},
 		methods: {
-			//选择页数
-			handleCurrentChange(val) {
-				this.pageNum = val
-				this.queryTable();
-			},
-			//选择每页条数
-			handleSizeChange(val) {
-				this.pageSize = val;
-				this.queryTable();
-			},
 			//校验时间格式
 			judgeTime() {
 				if (!this.start || !this.end) return
@@ -122,38 +118,76 @@
 					});
 				}
 			},
-			queryTabel() {
-				const param=encodeURI("point:"+this.point+" start:"+this.start+' end:'+this.end)
-				this.$get("/admin/v1/contents?type=Logs&count=-1&&q="+param, {
-				}).then(response => {
-					this.tableData =response.data||[]
-					this.total = response.meta.total
+			dealData() {
+				this.tableData.map((item) => {
+					item.key = this.point
+					item.value = item[this.point]
+					const datetime = new Date(item.timestamp)
+					const year = datetime.getFullYear()
+					const month = ("0" + (datetime.getMonth() + 1)).slice(-2)
+					const date = ("0" + datetime.getDate()).slice(-2)
+					const hour = ("0" + datetime.getHours()).slice(-2)
+					const minute = ("0" + datetime.getMinutes()).slice(-2)
+					const second = ("0" + datetime.getSeconds()).slice(-2)
+					item.date = year + "-" + month + '-' + date
+					item.time = hour + ':' + minute + ':' + second
 				})
 			},
-			getBaseData(){
+			queryTabel() {
+				const url = this.activeIndex === 0 ? "/log/history/" : "/alarm/history/"
+				this.$get(url + this.point + '?start=' + this.start.getTime() + '&end=' +
+					this.end.getTime(), {}).then(response => {
+					this.tableData = response.data || []
+					this.dealData()
+				})
+			},
+			getBaseData() {
 				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(
 					response => {
-						this.options=response.data
-						
+						this.options = response.data
+						this.point = response.data[0] && response.data[0].datakey
+						this.options.map((item) => {
+							this.pointData[item.datakey] = item
+						})
+						this.queryTabel()
 					})
 			},
-			changeTab(index){
-				this.activeIndex=index
-				if(index===1){
-this.tableData=this.$store.state.alarmData.alarms||[]
-this.tableData.map((item)=>{
-item.updated = this.$util.formatTime(item.updated,
-								'YYYY-MM-DD HH:mm:ss');
-})
-
-				}else{
+			changeTab(index) {
+				this.activeIndex = index
+				if (index === 1) {
+					this.tableData = this.$store.state.alarmData.alarms || []
+					this.dealData()
+				} else {
 					this.queryTabel()
 				}
+			},
+			fix(item) {
+				this.activObj = item
+				this.showTip = true
+			},
+			sendData() {
+				var obj = {
+					cmd: 'cmd',
+					alarmclass: 'A',
+					data: this.activObj
+				}
+				const that=this
+				this.centrifuge.publish("ack", obj).then(function(res) {
+					debugger
+					that.showTip = false
+					that.$message({
+						message: '操作成功!',
+						type: 'success'
+					})
+				}, function(err) {
+					console.log('publish error', err);
+				});
 			}
 		},
 		created() {
+			this.start = new Date(new Date() - 58 * 60 * 60 * 1000); //获取当天零点的时间
+			this.end = new Date(); //获取当天23:59:59的时间
 			this.getBaseData()
-			// this.queryTabel()
 		}
 	}
 </script>
@@ -196,6 +230,8 @@ item.updated = this.$util.formatTime(item.updated,
 			margin-top: 20px;
 			box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
 			border-radius: 3px;
+			height: 870px;
+			overflow-y: auto;
 		}
 		.el-row {
 			padding: 24px 0;
@@ -204,6 +240,8 @@ item.updated = this.$util.formatTime(item.updated,
 			align-items: center;
 		}
 		.fix {
+			display: block;
+			margin: 0 auto;
 			color: #fff;
 			text-align: center;
 			font-size: 20px;
@@ -214,7 +252,8 @@ item.updated = this.$util.formatTime(item.updated,
 			box-shadow: 3px 4px 10px 0px rgba(34, 159, 254, 0.5);
 			border-radius: 4px;
 		}
-		.fix1 {
+		/*.fix1 {
+			display: inline-block;
 			color: #fff;
 			text-align: center;
 			font-size: 20px;
@@ -224,7 +263,7 @@ item.updated = this.$util.formatTime(item.updated,
 			background-color: #fe4e46;
 			box-shadow: 3px 4px 10px 0px rgba(254, 51, 90, 0.5);
 			border-radius: 4px;
-		}
+		}*/
 		.confirm {
 			color: #fff;
 			text-align: center;
@@ -235,6 +274,7 @@ item.updated = this.$util.formatTime(item.updated,
 			background-color: #5ac462;
 			box-shadow: 3px 4px 10px 0px rgba(90, 196, 98, 0.5);
 			border-radius: 4px;
+			margin: 0 auto;
 		}
 		/deep/ .el-table th {
 			background-color: #f7f7f7!important;

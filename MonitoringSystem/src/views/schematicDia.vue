@@ -8,13 +8,17 @@
 			/>
 			<div :class="item.location[1]>0.8?'absolute-style left-style':'absolute-style'"
 			 v-if="item.location" :style="'top:'+item.location[0]*100+'%;left:'+item.location[1]*100+'%'"
-			 v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].deviceList"><img class="device-img" v-if="item.pic" :src="imgUrl+item.pic" />
+			 v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].deviceList"><!--<img class="device-img" v-if="item.pic" :src="imgUrl+item.pic" />-->
 				<div>
-					<div class="tip green" v-if="item.point&&!item.notShowGreen">
-						<div class="tip-left"> <img src="../assets/image/schematicDia/greencheck.png" /> </div>
+					<div class="tip green" v-if="item.point">
+						<div class="tip-left"> <img v-if="!item.isWarning" src="../assets/image/schematicDia/greencheck.png"
+							/> <img v-else src="../assets/image/schematicDia/redwarning.png" /> </div>
 						<div class="tip-right">
-							<div v-for="(subItem,subIndex) in item.point"> {{subItem.fullname}} {{$store.state.baseData[subItem.datakey]}}{{subItem.unit}}
-								</div>
+							<div v-for="(subItem,subIndex) in item.point">
+								<div class="blink" v-if="alarmData[subItem.datakey]"> {{alarmData[subItem.datakey].name}} </div>
+								<div> {{subItem.name}} {{$store.state.baseData[subItem.datakey]}}{{subItem.unit}}
+									</div>
+							</div>
 						</div>
 						<div class="close" @click="changeStatus(index,'Green')">×</div>
 					</div>
@@ -52,7 +56,8 @@
 					"scalable": true,
 					"transition": true,
 					"fullscreen": true
-				}
+				},
+				alarmData: {}
 			}
 		},
 		methods: {
@@ -66,6 +71,17 @@
 				this.rightList[activeIndex]['notShow' + str] = !this.rightList[activeIndex]
 					['show' + str]
 				this.$forceUpdate()
+			},
+			judge() {
+				this.rightList.map((item, index) => {
+					item.deviceList.map((subItem, index) => {
+						subItem.point&&subItem.point.map((childItem, index) => {
+							if (this.alarmData[childItem.datakey]) {
+								subItem.isWarning = true
+							}
+						})
+					})
+				})
 			},
 			getBaseData() {
 				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(
@@ -116,6 +132,7 @@
 									}
 								})
 							})
+							this.judge()
 							this.$forceUpdate()
 						})
 				})
@@ -137,7 +154,9 @@
 		},
 		mounted() {},
 		created() {
-			console.log(this.$store.state.alarmData)
+			this.$store.state && this.$store.state.alarmData.alarms.map((item) => {
+				this.alarmData[item.rel] = item
+			})
 			this.getBaseData()
 		}
 	}
@@ -273,25 +292,25 @@
 	
 	@keyframes fade {
 		from {
-			background: rgba(236,0,10,1);
+			background: rgba(236, 0, 10, 1);
 		}
 		50% {
-			background: rgba(236,0,10,0.2);
+			background: rgba(236, 0, 10, 0.2);
 		}
 		to {
-			background: rgba(236,0,10,1);
+			background: rgba(236, 0, 10, 1);
 		}
 	}
 	
 	@-webkit-keyframes fade {
 		from {
-			background: rgba(236,0,10,1);
+			background: rgba(236, 0, 10, 1);
 		}
 		50% {
-			background: rgba(236,0,10,0.2);
+			background: rgba(236, 0, 10, 0.2);
 		}
 		to {
-			background: rgba(236,0,10,1);
+			background: rgba(236, 0, 10, 1);
 		}
 	}
 	
