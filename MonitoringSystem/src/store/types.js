@@ -14,3 +14,4 @@ export const UID = 'uid';
 export const OID = 'oid';
 export const BASEDATA = 'baseData';
 export const ALARMDATA = 'alarmData';
+export const MDATA = 'mData';
