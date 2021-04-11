@@ -3,8 +3,8 @@
 		<div class="left">
 			<ul class="table-style">
 				
-				<li v-if="rightList[activeIndex]&&rightList[activeIndex].positions" v-for="(item,index) in rightList[activeIndex].positions"
-				 :key="item"> <span class="index">{{index+1}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
+				<li v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].positions"
+				 :key="item"><span class="index">{{pointList[item].ID}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
 					<div class="value ">
 						<div class="color1">{{$store.state.baseData[pointList[item].datakey]}}</div>
 						<div class="sub-title">运行值</div>
@@ -64,6 +64,7 @@
 						response.data.map((item) => {
 							this.pointList[item.ID] = item
 						})
+						
 					}).then(() => {
 					this.$get("/admin/v1/contents?type=Subsys&offset=-1&count=-1", {}).then(
 						response => {

@@ -33,7 +33,7 @@
     </div>
     <div class="box-card">
       <el-row v-if="activeIndex !== 1">
-        <div v-if="activeIndex == 0">
+        <div>
           测点
           <el-select v-model="point" placeholder="请选择">
             <el-option
@@ -47,7 +47,7 @@
         </div>
         开始
         <el-date-picker
-          value-format="yyyy-MM-dd HH:mm:ss"
+
           v-model="start"
           type="datetime"
           placeholder="选择日期时间"
@@ -55,7 +55,7 @@
         </el-date-picker>
         结束
         <el-date-picker
-          value-format="yyyy-MM-dd HH:mm:ss"
+   
           v-model="end"
           type="datetime"
           @change="judgeTime"
@@ -374,8 +374,8 @@ export default {
     });
   },
   created() {
-    this.start = new Date(new Date() - 58 * 60 * 60 * 1000); //获取当天零点的时间
-    this.end = new Date(); //获取当天23:59:59的时间
+    this.start = new Date(new Date() - 60 * 60 * 1000); 
+    this.end = new Date(); 
     this.getBaseData();
 
   },

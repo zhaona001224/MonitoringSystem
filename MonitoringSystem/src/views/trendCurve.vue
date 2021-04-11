@@ -15,9 +15,9 @@
 						</el-option>
 					</el-select>
 				</div> 开始
-				<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="start" type="datetime"
+				<el-date-picker  v-model="start" type="datetime"
 				 placeholder="选择日期时间"> </el-date-picker> 结束
-				<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="end"
+				<el-date-picker  v-model="end"
 				 type="datetime" placeholder="选择日期时间"> </el-date-picker>
 				<el-button type="primary" class="common-btn" @click="queryTabel">显示</el-button>
 			</el-row>
@@ -94,7 +94,11 @@
 					this.echartData.data3.push(array[0])
 					this.echartData.data4.push(array[1])
 				})
-				if(this.tableData.length>0) this.drawLine()
+				if(this.tableData.length>0) {
+					setTimeout(()=>{
+						this.drawLine()
+					},500)
+				}
 				
 			},
 			queryTabel() {
@@ -106,6 +110,7 @@
 				})
 			},
 			drawLine() {
+				console.log( this.echartData)
 				let myChart = this.$echarts.init(document.getElementById("myChart"))
 				let option = {
 					color: ['#ff150a', '#fd9e5e'],
@@ -204,7 +209,7 @@
 			}
 		},
 		created() {
-			this.start = new Date(new Date().setHours(0, 0, 0, 0) -  60 * 60 * 1000); //获取当天零点的时间
+		 this.start = new Date(new Date() - 60 * 60 * 1000); 
 			this.end = new Date(); //获取当天23:59:59的时间
 			this.getData()
 		}

@@ -192,7 +192,6 @@ export default {
   overflow-y: auto;
   .tab {
     display: flex;
-    width: 1566px;
     background-color: #ffffff;
     box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
     border-radius: 3px;

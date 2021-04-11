@@ -4,7 +4,7 @@
 		<img style="display: none;" v-for="(item,index) in imgShow" :src="item" :key="index"
 			/> </viewer>
 		<div class="left" @click="clickGeneratePicture" ref="imageDom" v-if="rightList[activeIndex]">
-		<img :src="require('@/assets/image/schematicDia/'+(rightList[activeIndex].fullname)+'-Model.jpg')"
+		<img :src="require('@/assets/image/schematicDia/'+(rightList[activeIndex].name)+'-Model.jpg')"
 			/>
 			<div :class="item.location[1]>0.8?'absolute-style left-style':'absolute-style'"
 			 v-if="item.location" :style="'top:'+item.location[0]*100+'%;left:'+item.location[1]*100+'%'"
@@ -154,7 +154,7 @@
 		},
 		mounted() {},
 		created() {
-			this.$store.state && this.$store.state.alarmData.alarms.map((item) => {
+			this.$store.state.alarmData && this.$store.state.alarmData.alarms.map((item) => {
 				this.alarmData[item.rel] = item
 			})
 			this.getBaseData()
