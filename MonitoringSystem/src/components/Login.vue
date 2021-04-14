@@ -96,6 +96,7 @@
 									type: 'success',
 									message: '登录成功!'
 								});
+								that.$router.push("/schematicDia")
 								that.$get("/admin/v1/config", {}).then(response1 => {
 									response1.data[0].data.email = that.login.userName;
 									if (response1.retCode == 0) {
