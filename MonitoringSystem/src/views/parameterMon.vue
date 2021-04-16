@@ -2,16 +2,15 @@
 	<div class="contain">
 		<div class="left">
 			<ul class="table-style">
-				
-				<li v-if="rightList[activeIndex]&&rightList[activeIndex].positions" v-for="(item,index) in rightList[activeIndex].positions"
-				 :key="item"> <span class="index">{{index+1}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
+				<li v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].positions"
+				 :key="item"><span class="index">{{pointList[item].datakey}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
 					<div class="value ">
-						<div class="color1">{{$store.state.baseData[pointList[item].datakey]}}</div>
+						<div :class="'color1 '+getStyle(item)">{{$store.state.baseData[pointList[item].datakey]}}</div>
 						<div class="sub-title">运行值</div>
 					</div>
 					<div class="split"></div>
 					<div class="value">
-						<div class="color2">{{getValue(item,0)}}</div>
+						<div class="color2 ">{{getValue(item,0)}}</div>
 						<div class="sub-title">预警值</div>
 					</div>
 					<div class="split"></div>
@@ -58,6 +57,36 @@
 					}
 				}
 			},
+			getStyle(item) {
+				const value = this.$store.state.baseData[this.pointList[item].datakey]
+				const obj = this.pointList[item]
+				const array = obj.data.split(',')
+				if (obj.direction === "+") {
+					if (value > array[1]) {
+						return 'red'
+					} else if (value > array[0]) {
+						return 'orange'
+					} else {
+						return 'green'
+					}
+				}
+				if (obj.direction === "-") {
+					if (value < array[1]) {
+						return 'red'
+					} else if (value < array[0]) {
+						return 'orange'
+					} else {
+						return 'green'
+					}
+				}
+				if (obj.direction === "=") {
+					if (value <= array[1] && value >= array[0]) {
+						return 'green'
+					} else {
+						return 'red'
+					}
+				}
+			},
 			getBaseData() {
 				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(
 					response => {
@@ -96,8 +125,12 @@
 		display: flex;
 		padding: 2px 21px;
 		justify-content: space-between;
+		.table-style {
+			height: 934px;
+			overflow-y: auto;
+		}
 		.left {
-			width: 1346px;
+			width: 1390px;
 			height: 934px;
 			background-color: #ffffff;
 			box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
@@ -109,7 +142,7 @@
 			}
 			li {
 				list-style: none;
-				width: 1346px;
+				width: 1366px;
 				height: 121px;
 				background-color: #ffffff;
 				border-radius: 3px;
@@ -117,7 +150,7 @@
 				align-items: center;
 				height: 121px;
 				.index {
-					width: 140px;
+					width: 200px;
 					text-align: center;
 					font-family: SimSun;
 					font-size: 72px;
@@ -129,7 +162,7 @@
 					color: #d9e6ff;
 				}
 				.title {
-					width: 565px;
+					width: 490px;
 					font-size: 28px;
 					letter-spacing: 1px;
 					color: #333333;
@@ -138,7 +171,7 @@
 					white-space: nowrap;
 				}
 				.value {
-					width: 200px;
+					width: 190px;
 					text-align: center;
 					font-family: Bahnschrift;
 					font-size: 48px;
@@ -153,6 +186,15 @@
 					.color3 {
 						font-size: 48px;
 						color: #fe4e46;
+					}
+					.green {
+						color: forestgreen;
+					}
+					.orange {
+						color: orange;
+					}
+					.red {
+						color: red;
 					}
 					.sub-title {
 						color: #aeb4be;

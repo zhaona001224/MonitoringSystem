@@ -90,26 +90,13 @@
 							if (response.retCode == 0) {
 								localStorage.setItem('token', response.data);
 								this.loginData = JSON.parse(response.contents);
-								
-								
 								that.$message({
 									type: 'success',
 									message: '登录成功!'
 								});
-								that.$router.push("/schematicDia")
-								that.$get("/admin/v1/config", {}).then(response1 => {
-									response1.data[0].data.email = that.login.userName;
-									if (response1.retCode == 0) {
-										that.$store.commit(types.CONFIGDATA, JSON.stringify(response1.data[
-											0].data))
-										
-									} else {
-										that.$message({
-											type: 'warning',
-											message: response.message
-										});
-									}
-								})
+								this.$router.push('/schematicDia')
+								
+								
 							} else {
 								that.$message({
 									type: 'warning',

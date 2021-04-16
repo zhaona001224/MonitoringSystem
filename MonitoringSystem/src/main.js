@@ -40,8 +40,10 @@ var centrifuge = new Centrifuge("ws://216.24.249.93:8000/connection/websocket", 
 centrifuge.connect();
 
 var subscription = centrifuge.subscribe("alarmdata", function(message) {
-	store.commit(types.ALARMDATA, message.data);
-	console.log(message.data)
+	if(message.data.timestamp){
+		store.commit(types.ALARMDATA, message.data);
+	}
+
 
 });
 var subscription = centrifuge.subscribe("keepdata", function(message) {

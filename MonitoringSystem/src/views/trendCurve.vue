@@ -9,16 +9,15 @@
 		</div>
 		<div class="box-card">
 			<el-row v-if="activeIndex!=1">
-				<div > 测点
-					<el-select v-model="point" placeholder="请选择">
+				<div> 测点
+					<el-select @change="queryTabel" v-model="point" placeholder="请选择">
 						<el-option v-for="item in options" :key="item.ID" :label="item.name" :value="item.datakey">
 						</el-option>
 					</el-select>
 				</div> 开始
-				<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="start" type="datetime"
-				 placeholder="选择日期时间"> </el-date-picker> 结束
-				<el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="end"
-				 type="datetime" placeholder="选择日期时间"> </el-date-picker>
+				<el-date-picker v-model="start" type="datetime" placeholder="选择日期时间"> </el-date-picker> 结束
+				<el-date-picker v-model="end" type="datetime" placeholder="选择日期时间">
+				</el-date-picker>
 				<el-button type="primary" class="common-btn" @click="queryTabel">显示</el-button>
 			</el-row>
 			<div v-if="tableData.length>0" class="chart" id="myChart"> </div>
@@ -35,7 +34,7 @@
 				start: '',
 				end: '',
 				options: [],
-				tableData:[],
+				tableData: [],
 				point: '',
 				echartData: {},
 				pointData: {}
@@ -69,7 +68,7 @@
 				if (index === 1) {
 					this.tableData = this.$store.state.alarmData.alarms || []
 					this.dealData()
-				}else{
+				} else {
 					this.queryTabel()
 				}
 			},
@@ -90,12 +89,15 @@
 					item.time = hour + ':' + minute + ':' + second
 					const array = this.pointData[this.point].data.split(',')
 					this.echartData.data1.push(item.date + ' ' + item.time)
-					this.echartData.data2.push(item[this.point])
+					this.echartData.data2.push(item.value)
 					this.echartData.data3.push(array[0])
 					this.echartData.data4.push(array[1])
 				})
-				if(this.tableData.length>0) this.drawLine()
-				
+				if (this.tableData.length > 0) {
+					setTimeout(() => {
+						this.drawLine()
+					}, 500)
+				}
 			},
 			queryTabel() {
 				const url = this.activeIndex === 0 ? "/log/history/" : "/alarm/history/"
@@ -106,6 +108,8 @@
 				})
 			},
 			drawLine() {
+				
+				console.log(this.echartData)
 				let myChart = this.$echarts.init(document.getElementById("myChart"))
 				let option = {
 					color: ['#ff150a', '#fd9e5e'],
@@ -204,10 +208,19 @@
 			}
 		},
 		created() {
-			this.start = new Date(new Date().setHours(0, 0, 0, 0) -  60 * 60 * 1000); //获取当天零点的时间
+			this.start = new Date(new Date() - 60 * 60 * 1000);
 			this.end = new Date(); //获取当天23:59:59的时间
 			this.getData()
-		}
+		},
+		mounted() {
+			const that = this
+			this.centrifuge.subscribe("alarmdata", function(message) {
+				if (message.data.timestamp && that.activeIndex == 1) {
+					that.tableData = message.data.alarms || [];
+					that.dealData();
+				}
+			});
+		},
 	}
 </script>
 <style lang="less" scoped>
@@ -229,7 +242,6 @@
 				font-size: 20px;
 				color: #b3b3b3;
 				justify-content: center;
-				
 				img {
 					margin-right: 8px;
 				}
