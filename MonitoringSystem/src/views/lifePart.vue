@@ -6,7 +6,7 @@
         <div>寿命件到期提醒</div>
       </div>
       <div class="right">
-        <div class="li" v-for="(item, index) in alarmData" :key="index">
+        <div class="li"  v-if="item.IsWarning"  v-for="(item, index) in alarmData" :key="index">
           <div class="text">
             <img src="../assets/image/maintenance/warning.png" />
             {{ item.name }}

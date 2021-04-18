@@ -6,7 +6,7 @@
         <div>维护保养提醒</div>
       </div>
       <div class="right">
-        <div class="li" v-for="(item, index) in alarmData" :key="index">
+        <div class="li" v-if="item.IsWarning" v-for="(item, index) in alarmData" :key="index">
           <div class="text">
             <img src="../assets/image/maintenance/warning.png" />
             {{ item.name }}
@@ -207,6 +207,7 @@ export default {
     const that = this;
     this.centrifuge.subscribe("alarmdata", function (message) {
       if (message.data.timestamp) {
+        console.log(message.data.maintains)
         that.alarmData = message.data.maintains;
       }
     });
