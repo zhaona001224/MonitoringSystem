@@ -357,6 +357,7 @@ export default {
         data: JSON.stringify(this.activeObj),
       };
       const that = this;
+      debugger
       this.centrifuge.publish("alarmdata", obj).then(
         function (res) {
           that.showTip2 = false;

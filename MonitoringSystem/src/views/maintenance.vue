@@ -6,11 +6,7 @@
         <div>维护保养提醒</div>
       </div>
       <div class="right">
-        <div
-          class="li"
-          v-for="(item, index) in alarmData"
-          :key="index"
-        >
+        <div class="li" v-for="(item, index) in alarmData" :key="index">
           <div class="text">
             <img src="../assets/image/maintenance/warning.png" />
             {{ item.name }}
@@ -62,7 +58,29 @@
       </div>
     </div>
     <el-dialog title="" :visible.sync="showTip" width="30%">
-      <span>是否确认故障</span>
+      <div style="font-size: 16px; margin-bottom: 40px; color: #000">
+        {{ activeObj.name }}
+      </div>
+      <div style="margin-bottom: 20px; align: center">
+        <span style="width: 66px; display: inline-block">周期</span>
+        <el-input
+          style="width: 300px; height: 40px"
+          v-model="time"
+          placeholder="请输入周期"
+        ></el-input>
+      </div>
+      <div>
+        <span style="width: 66px; display: inline-block">保养日期</span>
+        <el-date-picker
+          style="width: 300px; height: 40px"
+          v-model="date"
+          type="date"
+          placeholder="选择保养日期"
+          value-format="yyyy-MM-dd"
+        >
+        </el-date-picker>
+      </div>
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="showTip = false">取 消</el-button>
         <el-button type="primary" @click="sendData">确 定</el-button>
@@ -86,6 +104,9 @@ export default {
       total: 0,
       showTip: false,
       alarmData: [],
+      activeObj: {},
+      time: "",
+      date: "",
     };
   },
   methods: {
@@ -100,16 +121,39 @@ export default {
       this.queryTable();
     },
     fix(item) {
-      this.activObj = item;
+      this.activeObj = item;
       this.showTip = true;
     },
     sendData() {
+      if (!this.time) {
+        this.$message({
+          message: "请填写周期!",
+          type: "warning",
+        });
+        return
+      }
+      if (!this.date) {
+        this.$message({
+          message: "请选择日期!",
+          type: "warning",
+        });
+        return
+      }
+      this.activeObj.start=this.date
+       this.activeObj.duration=this.time
+       const end=new Date(this.date)
+      this.activeObj.end= new Date(end.setMonth(end.getMonth() + this.time * 1))
+      const year = this.activeObj.end.getFullYear()
+					const month = ("0" + ( this.activeObj.end.getMonth() +1)).slice(-2)
+					const date = ("0" +  this.activeObj.end.getDate()).slice(-2)
+				this.activeObj.end = year + "-" + month + '-' + date
       var obj = {
         cmd: "cmd",
         alarmclass: "M",
-        data: JSON.stringify(this.activObj),
+        data: JSON.stringify(this.activeObj),
       };
       const that = this;
+      debugger
       this.centrifuge.publish("alarmdata", obj).then(
         function (res) {
           that.showTip = false;
@@ -117,9 +161,11 @@ export default {
             message: "操作成功!",
             type: "success",
           });
-		    that.pageNum=1
-		  that.tableData=[]
-		   that.queryTabel()
+          that.time=''
+          that.date=''
+          that.pageNum = 1;
+          that.tableData = [];
+          that.queryTabel();
         },
         function (err) {
           console.log("publish error", err);
@@ -190,6 +236,9 @@ export default {
 <style lang="less" scoped>
 .contain {
   padding: 2px 21px;
+  /deep/ .el-date-editor--datetime .el-input__inner {
+    height: 40px;
+  }
   .tab {
     display: flex;
     width: 1566px;
