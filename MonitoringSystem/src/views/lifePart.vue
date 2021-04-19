@@ -120,68 +120,24 @@ export default {
             message: "操作成功!",
             type: "success",
           });
-		  that.pageNum=1
-		  that.tableData=[]
-		   that.queryTabel()
         },
         function (err) {
           console.log("publish error", err);
         }
       );
     },
-    queryTabel() {
-      this.$get(
-        "/admin/v1/contents?type=Lifepart&offset=" +
-          this.pageNum +
-          "&pageSize=" +
-          this.pageSize,
-        {}
-      ).then((response) => {
-        const self = this;
-        this.tableData = this.tableData.concat(response.data);
-        this.total = response.meta.total;
-        if (this.scroll) return;
-        this.$nextTick(() => {
-          this.scroll = new BScroll(this.$refs.bscroll, {
-            click: true,
-            //上拉
-            pullUpLoad: {
-              threshold: -30,
-            },
-          });
-          //上拉
-          this.scroll.on("pullingUp", () => {
-            if (self.tableData.length < self.total) {
-              self.pageNum++;
-              self.queryTabel();
-            }
-          });
-        });
-      });
-    },
-  },
-  created() {
-    this.queryTabel();
+    
   },
   mounted() {
 	  const that=this
     this.centrifuge.subscribe("alarmdata", function (message) {
       if (message.data.timestamp) {
         that.alarmData = message.data.lifes;
+        	this.tableData = message.data.maintains.filter((item) => !item.IsWarning) || []
+			
       }
     });
-  },
-  watch: {
-    tableData: {
-      handler: function () {
-        if (this.scroll) {
-          this.scroll.finishPullUp();
-          this.scroll.refresh();
-        }
-      },
-      deep: true,
-    },
-  },
+  }
 };
 </script>
 <style lang="less" scoped>
