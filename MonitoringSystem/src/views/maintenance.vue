@@ -5,7 +5,7 @@
 				<div>维护保养提醒</div>
 			</div>
 			<div class="right">
-				<div class="li" v-if="item.IsWarning" v-for="(item, index) in alarmData" :key="index">
+				<div class="li" v-if="item.isWarning" v-for="(item, index) in alarmData" :key="index">
 					<div class="text"> <img src="../assets/image/maintenance/warning.png" /> {{ item.name }} </div>
 					<div class="btn" @click="fix(item)">确认</div>
 				</div>
@@ -97,7 +97,6 @@
 					data: JSON.stringify(this.activeObj),
 				};
 				const that = this;
-				debugger
 				this.centrifuge.publish("alarmdata", obj).then(function(res) {
 					that.showTip = false;
 					that.$message({
@@ -114,6 +113,7 @@
 			const that = this;
 			this.centrifuge.subscribe("alarmdata", function(message) {
 				if (message.data.timestamp) {
+					console.log(message.data.maintains)
 					that.alarmData = message.data.maintains;
 					this.tableData = message.data.maintains.filter((item) => !item.IsWarning) || []
 				}
