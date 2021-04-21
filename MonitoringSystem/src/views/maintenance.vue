@@ -25,19 +25,19 @@
 				</el-table>
 			</div>
 		</div>
-		<el-dialog title="" :visible.sync="showTip" width="30%">
+		<el-dialog title="" :visible.sync="showTip" width="33%">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
 			<div style="margin-bottom: 30px;">上述维护工作已完成？</div>
-			<div style="margin-bottom: 20px; align: center"> <span style="width: 66px; display: inline-block">周期</span>
-				<el-input style="width: 280px; height: 40px"
+			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">周期</span>
+				<el-input style="width: 260px; height: 40px"
 				 v-model="activeObj.duration" @change="changeDate" type="number" placeholder="请输入周期"></el-input>
 			</div>
-			<div> <span style="margin-bottom:30px;width: 66px; display: inline-block">保养日期</span>
-				<el-date-picker style="width: 280px; height: 40px"
+			<div> <span style="margin-bottom:30px;width: 116px; display: inline-block">保养日期</span>
+				<el-date-picker style="width: 260px; height: 40px"
 				 v-model="activeObj.start" @change="changeDate"  type="date" placeholder="选择保养日期" value-format="yyyy-MM-dd"> </el-date-picker>
 			</div>
-			<div style=" align: center"> <span style="width: 66px; display: inline-block">周期</span>
-				<el-input readonly style="width: 280px; height: 40px"
+			<div style=" align: center"> <span style="width: 116px; display: inline-block">下次保养结束时间</span>
+				<el-input readonly style="width: 260px; height: 40px"
 				 v-model="activeObj.end" placeholder="下次保养结束时间"></el-input>
 			</div>
 			<span slot="footer" class="dialog-footer">
@@ -94,9 +94,10 @@
 				var obj = {
 					cmd: "cmd",
 					alarmclass: "M",
-					data: JSON.stringify(this.activeObj),
+					data: JSON.stringify(this.activeObj)
 				};
 				const that = this;
+				debugger
 				this.centrifuge.publish("alarmdata", obj).then(function(res) {
 					that.showTip = false;
 					that.$message({
@@ -115,7 +116,7 @@
 				if (message.data.timestamp) {
 					console.log(message.data.maintains)
 					that.alarmData = message.data.maintains;
-					this.tableData = message.data.maintains.filter((item) => !item.IsWarning) || []
+					that.tableData = message.data.maintains.filter((item) => !item.isWarning) || []
 				}
 			});
 		}

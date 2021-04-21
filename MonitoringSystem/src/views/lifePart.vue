@@ -27,22 +27,26 @@
 				</el-table>
 			</div>
 		</div>
-		<el-dialog title="" :visible.sync="showTip" width="30%">
+		<el-dialog title="" :visible.sync="showTip" width="33%">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
 			<div style="margin-bottom: 30px;">上述维护工作已完成？</div>
-			<div style="margin-bottom: 20px; align: center"> <span style="width: 66px; display: inline-block">周期</span>
-				<el-input style="width: 280px; height: 40px"
-				 v-model="activeObj.duration" @change="changeDate" type="number" placeholder="请输入周期"></el-input>
+			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">数量</span>
+				<el-input style="width: 260px; height: 40px"
+				 v-model="activeObj.quantity" @change="changeDate" type="number" placeholder="请输入数量"></el-input>
 			</div>
-			<div> <span style="margin-bottom:30px;width: 66px; display: inline-block">保养日期</span>
-				<el-date-picker style="width: 280px; height: 40px" v-model="activeObj.start"
-				 @change="changeDate" type="date" placeholder="选择保养日期" value-format="yyyy-MM-dd">
-				</el-date-picker>
+			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">周期</span>
+				<el-input style="width: 260px; height: 40px"
+				 v-model="activeObj.life" @change="changeDate" type="number" placeholder="请输入周期"></el-input>
 			</div>
-			<div style=" align: center"> <span style="width: 66px; display: inline-block">周期</span>
-				<el-input readonly
-				 style="width: 280px; height: 40px" v-model="activeObj.end" placeholder="下次保养结束时间"></el-input>
-			</div> <span slot="footer" class="dialog-footer">
+			<div> <span style="margin-bottom:30px;width: 116px; display: inline-block">保养日期</span>
+				<el-date-picker style="width: 260px; height: 40px"
+				 v-model="activeObj.start" @change="changeDate"  type="date" placeholder="选择保养日期" value-format="yyyy-MM-dd"> </el-date-picker>
+			</div>
+			<div style=" align: center"> <span style="width: 116px; display: inline-block">下次保养结束时间</span>
+				<el-input readonly style="width: 260px; height: 40px"
+				 v-model="activeObj.end" placeholder="下次保养结束时间"></el-input>
+			</div>
+			<span slot="footer" class="dialog-footer">
         <el-button @click="showTip = false">取 消</el-button>
         <el-button type="primary" @click="sendData">确 定</el-button>
       </span> </el-dialog>
@@ -120,7 +124,7 @@
 				if (message.data.timestamp) {
 					console.log(message.data.lifes)
 					that.alarmData = message.data.lifes;
-					that.tableData = message.data.lifes.filter((item) => !item.IsWarning) || []
+					that.tableData = message.data.lifes.filter((item) => !item.isWarning) || []
 				}
 			});
 		}

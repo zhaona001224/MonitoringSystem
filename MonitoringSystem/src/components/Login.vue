@@ -32,7 +32,10 @@
 	export default {
 		created() {
 			this.doKeyCode()
-			if (localStorage.token) {}
+			if (localStorage.token) {
+				this.$router.push('/schematicDia')
+								
+			}
 		},
 		data() {
 			var validateUserName = (rule, value, callback) => {
