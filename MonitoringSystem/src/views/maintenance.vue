@@ -17,11 +17,11 @@
 					<el-table-column align="center" prop="name" label="维保内容" width="810px" cell-class-name="center"
 					 header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="duration" label="保养周期"
-					 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+					 width="180px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="start" label="保养日期"
-					 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+					 width="308px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="end" label="下次保养日期"
-					 width="250px" cell-class-name="center" header-align="center"> </el-table-column>
+					 width="308px" cell-class-name="center" header-align="center"> </el-table-column>
 				</el-table>
 			</div>
 		</div>
@@ -91,13 +91,14 @@
 					});
 					return
 				}
+				this.activeObj.duration=this.activeObj.duration*1
 				var obj = {
 					cmd: "cmd",
 					alarmclass: "M",
 					data: JSON.stringify(this.activeObj)
 				};
 				const that = this;
-				debugger
+				
 				this.centrifuge.publish("alarmdata", obj).then(function(res) {
 					that.showTip = false;
 					that.$message({
@@ -130,7 +131,7 @@
 		}
 		.tab {
 			display: flex;
-			width: 1566px;
+			width: 100%;
 			background-color: #ffffff;
 			box-shadow: -2px 4px 30px 0px rgba(64, 129, 255, 0.08);
 			border-radius: 3px;

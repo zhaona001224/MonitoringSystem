@@ -14,37 +14,37 @@
 		<div class="box-card scroll-wrapper" ref="bscroll">
 			<div>
 				<el-table :data="tableData" width="100%">
-					<el-table-column align="center" prop="name" label="零件名称" width="400px" cell-class-name="center"
+					<el-table-column align="center" prop="name" label="零件名称" width="610px" cell-class-name="center"
 					 header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="quantity" label="装机数"
-					 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+					 width="216px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="life" label="寿命 （月）"
-					 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+					 width="216px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="target" label="更换日期"
-					 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+					 width="280px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="next" label="下次更换日期"
-					 width="230px" cell-class-name="center" header-align="center"> </el-table-column>
+					 width="280px" cell-class-name="center" header-align="center"> </el-table-column>
 				</el-table>
 			</div>
 		</div>
 		<el-dialog title="" :visible.sync="showTip" width="33%">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
 			<div style="margin-bottom: 30px;">上述维护工作已完成？</div>
-			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">数量</span>
+			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">装机数</span>
 				<el-input style="width: 260px; height: 40px"
-				 v-model="activeObj.quantity" @change="changeDate" type="number" placeholder="请输入数量"></el-input>
+				 v-model="activeObj.quantity" type="number" placeholder="请输入装机数"></el-input>
 			</div>
-			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">周期</span>
+			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">寿命</span>
 				<el-input style="width: 260px; height: 40px"
-				 v-model="activeObj.life" @change="changeDate" type="number" placeholder="请输入周期"></el-input>
+				 v-model="activeObj.life" @change="changeDate" type="number" placeholder="请输入寿命"></el-input>
 			</div>
-			<div> <span style="margin-bottom:30px;width: 116px; display: inline-block">保养日期</span>
+			<div> <span style="margin-bottom:30px;width: 116px; display: inline-block">更换日期</span>
 				<el-date-picker style="width: 260px; height: 40px"
-				 v-model="activeObj.start" @change="changeDate"  type="date" placeholder="选择保养日期" value-format="yyyy-MM-dd"> </el-date-picker>
+				 v-model="activeObj.target" @change="changeDate"  type="date" placeholder="选择更换日期" value-format="yyyy-MM-dd"> </el-date-picker>
 			</div>
-			<div style=" align: center"> <span style="width: 116px; display: inline-block">下次保养结束时间</span>
+			<div style=" align: center"> <span style="width: 116px; display: inline-block">下次更换日期</span>
 				<el-input readonly style="width: 260px; height: 40px"
-				 v-model="activeObj.end" placeholder="下次保养结束时间"></el-input>
+				 v-model="activeObj.next" placeholder="下次更换日期"></el-input>
 			</div>
 			<span slot="footer" class="dialog-footer">
         <el-button @click="showTip = false">取 消</el-button>
@@ -77,35 +77,45 @@
 				this.showTip = true;
 			},
 			changeDate() {
-				const end = new Date(this.activeObj.start)
-				this.activeObj.end = new Date(end.setMonth(end.getMonth() + this.activeObj.duration *
+				const end = new Date(this.activeObj.target)
+				this.activeObj.next = new Date(end.setMonth(end.getMonth() + this.activeObj.life *
 					1))
-				const year = this.activeObj.end.getFullYear()
-				const month = ("0" + (this.activeObj.end.getMonth() + 1)).slice(-2)
-				const date = ("0" + this.activeObj.end.getDate()).slice(-2)
-				this.activeObj.end = year + "-" + month + '-' + date
+				const year = this.activeObj.next.getFullYear()
+				const month = ("0" + (this.activeObj.next.getMonth() + 1)).slice(-2)
+				const date = ("0" + this.activeObj.next.getDate()).slice(-2)
+				this.activeObj.next = year + "-" + month + '-' + date
 			},
 			sendData() {
-				if (!this.activeObj.duration) {
+				if (!this.activeObj.quantity) {
 					this.$message({
-						message: "请填写周期!",
+						message: "请填写数量!",
 						type: "warning",
 					});
 					return
 				}
-				if (!this.activeObj.start) {
+				if (!this.activeObj.life) {
+					this.$message({
+						message: "请填写寿命!",
+						type: "life",
+					});
+					return
+				}
+				if (!this.activeObj.target) {
 					this.$message({
 						message: "请选择日期!",
 						type: "warning",
 					});
 					return
 				}
+				this.activeObj.quantity=this.activeObj.quantity*1
+				this.activeObj.life=this.activeObj.life*1
 				var obj = {
 					cmd: "cmd",
 					alarmclass: "L",
 					data: JSON.stringify(this.activeObj),
 				};
 				const that = this;
+				console.log(JSON.stringify(this.activeObj))
 				this.centrifuge.publish("alarmdata", obj).then(function(res) {
 					that.showTip = false;
 					that.$message({
