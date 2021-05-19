@@ -118,7 +118,7 @@
 										if (item.devices.indexOf(subItem.ID) > -1) {
 											if (item.deviceinfo && item.deviceinfo != '--remove--') {
 												item.deviceinfo = item.deviceinfo.replace(/<[^>]+>/g, "");
-												subItem.location = JSON.parse(item.deviceinfo)[subItem.fullname]
+												subItem.location = item.deviceinfo&&JSON.parse(item.deviceinfo)[subItem.name]
 											}
 											var array = []
 											if (subItem.points) {
