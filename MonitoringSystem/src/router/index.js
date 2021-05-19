@@ -6,7 +6,7 @@ import Home from '../components/Home'
 Vue.use(VueRouter);
 
 const routes = [{
-		path: '/login',
+		path: '/',
 		name: 'login',
 		component: resolve => require(['@/components/Login'], resolve)
 	},

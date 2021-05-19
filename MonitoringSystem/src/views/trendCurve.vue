@@ -42,7 +42,7 @@
 		},
 		methods: {
 			getData() {
-				this.$get("/admin/v1/contents?type=Point", {}).then(response => {
+				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(response => {
 					this.options = response.data
 					this.options.map((item) => {
 						this.pointData[item.datakey] = item

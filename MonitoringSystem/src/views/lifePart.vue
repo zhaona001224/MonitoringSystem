@@ -18,10 +18,16 @@
 					 header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="quantity" label="装机数"
 					 width="216px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="life" label="寿命 （月）"
-					 width="216px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="target" label="更换日期"
-					 width="280px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center"  label="寿命 （月）"
+					 width="216px" cell-class-name="center" header-align="center">
+					 <template slot-scope="scope"> <div style="line-height: 63px;font-size: 22px;    color: #4081ff;
+" @click="fix(scope.row,1)">{{scope.row.life}}</div> </template>
+					</el-table-column>
+					<el-table-column align="center"  label="更换日期"
+					 width="280px" cell-class-name="center" header-align="center"> 
+					 <template slot-scope="scope"> <div style="line-height: 63px;font-size: 22px;    color: #4081ff;
+" @click="fix(scope.row,1)">{{scope.row.target}}</div> </template>
+					</el-table-column>
 					<el-table-column align="center" prop="next" label="下次更换日期"
 					 width="280px" cell-class-name="center" header-align="center"> </el-table-column>
 				</el-table>
@@ -29,7 +35,7 @@
 		</div>
 		<el-dialog title="" :visible.sync="showTip" width="33%">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
-			<div style="margin-bottom: 30px;">上述维护工作已完成？</div>
+			<div style="margin-bottom: 30px;" v-if="type!=1">上述维护工作已完成？</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">装机数</span>
 				<el-input style="width: 260px; height: 40px"
 				 v-model="activeObj.quantity" type="number" placeholder="请输入装机数"></el-input>
@@ -39,14 +45,14 @@
 				 v-model="activeObj.life" @change="changeDate" type="number" placeholder="请输入寿命"></el-input>
 			</div>
 			<div> <span style="margin-bottom:30px;width: 116px; display: inline-block">更换日期</span>
-				<el-date-picker style="width: 260px; height: 40px"
-				 v-model="activeObj.target" @change="changeDate"  type="date" placeholder="选择更换日期" value-format="yyyy-MM-dd"> </el-date-picker>
+				<el-date-picker style="width: 260px; height: 40px" v-model="activeObj.target"
+				 @change="changeDate" type="date" placeholder="选择更换日期" value-format="yyyy-MM-dd">
+				</el-date-picker>
 			</div>
 			<div style=" align: center"> <span style="width: 116px; display: inline-block">下次更换日期</span>
-				<el-input readonly style="width: 260px; height: 40px"
-				 v-model="activeObj.next" placeholder="下次更换日期"></el-input>
-			</div>
-			<span slot="footer" class="dialog-footer">
+				<el-input readonly
+				 style="width: 260px; height: 40px" v-model="activeObj.next" placeholder="下次更换日期"></el-input>
+			</div> <span slot="footer" class="dialog-footer">
         <el-button @click="showTip = false">取 消</el-button>
         <el-button type="primary" @click="sendData">确 定</el-button>
       </span> </el-dialog>
@@ -68,18 +74,20 @@
 				scroll: "",
 				alarmData: [],
 				showTip: false,
-				activeObj:{}
+				activeObj: {},
+				type:''
 			};
 		},
 		methods: {
-			fix(item) {
+			fix(item, type) {
 				this.activeObj = item;
 				this.showTip = true;
+				this.type = type
 			},
 			changeDate() {
 				const end = new Date(this.activeObj.target)
-				this.activeObj.next = new Date(end.setMonth(end.getMonth() + this.activeObj.life *
-					1))
+				this.activeObj.next = new Date(end.setMonth(end.getMonth() + this.activeObj
+					.life * 1))
 				const year = this.activeObj.next.getFullYear()
 				const month = ("0" + (this.activeObj.next.getMonth() + 1)).slice(-2)
 				const date = ("0" + this.activeObj.next.getDate()).slice(-2)
@@ -107,25 +115,48 @@
 					});
 					return
 				}
-				this.activeObj.quantity=this.activeObj.quantity*1
-				this.activeObj.life=this.activeObj.life*1
+				this.activeObj.quantity = this.activeObj.quantity * 1
+				this.activeObj.life = this.activeObj.life * 1
 				var obj = {
 					cmd: "cmd",
 					alarmclass: "L",
 					data: JSON.stringify(this.activeObj),
 				};
 				const that = this;
-				console.log(JSON.stringify(this.activeObj))
-				this.centrifuge.publish("alarmdata", obj).then(function(res) {
-					that.showTip = false;
-					that.$message({
-						message: "操作成功!",
-						type: "success",
+				if (this.type === 1) {
+					this.$post("/admin/v1/content/update?type=Lifepart&ID=" + this.activeObj
+						.id, {
+							next: this.activeObj.next,
+							target: this.activeObj.target,
+							quantity: this.activeObj.quantity,
+							life: this.activeObj.life,
+						}).then(response => {
+						if (response.retCode == 0) {
+							this.showTip = false;
+							that.$message({
+								message: "操作成功!",
+								type: "success",
+							});
+							that.activeObj = {}
+						} else {
+							that.$message({
+								type: 'warning',
+								message: response.message
+							});
+						}
+					})
+				} else {
+					this.centrifuge.publish("alarmdata", obj).then(function(res) {
+						that.showTip = false;
+						that.$message({
+							message: "操作成功!",
+							type: "success",
+						});
+						that.activeObj = {}
+					}, function(err) {
+						console.log("publish error", err);
 					});
-					that.activeObj = {}
-				}, function(err) {
-					console.log("publish error", err);
-				});
+				}
 			},
 		},
 		mounted() {

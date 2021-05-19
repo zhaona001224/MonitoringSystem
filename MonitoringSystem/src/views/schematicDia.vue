@@ -8,7 +8,8 @@
 			/>
 			<div :class="item.location[1]>0.8?'absolute-style left-style':'absolute-style'"
 			 v-if="item.location" :style="'top:'+item.location[0]*100+'%;left:'+item.location[1]*100+'%'"
-			 v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].deviceList"><!--<img class="device-img" v-if="item.pic" :src="imgUrl+item.pic" />-->
+			 v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].deviceList">
+				<!--<img class="device-img" v-if="item.pic" :src="imgUrl+item.pic" />-->
 				<div>
 					<div class="tip green" v-if="item.point">
 						<div class="tip-left"> <img v-if="!item.isWarning" src="../assets/image/schematicDia/greencheck.png"
@@ -75,7 +76,7 @@
 			judge() {
 				this.rightList.map((item, index) => {
 					item.deviceList.map((subItem, index) => {
-						subItem.point&&subItem.point.map((childItem, index) => {
+						subItem.point && subItem.point.map((childItem, index) => {
 							if (this.alarmData[childItem.datakey]) {
 								subItem.isWarning = true
 							}
@@ -118,7 +119,8 @@
 										if (item.devices.indexOf(subItem.ID) > -1) {
 											if (item.deviceinfo && item.deviceinfo != '--remove--') {
 												item.deviceinfo = item.deviceinfo.replace(/<[^>]+>/g, "");
-												subItem.location = JSON.parse(item.deviceinfo)[subItem.fullname]
+
+												subItem.location = item.deviceinfo&&JSON.parse(item.deviceinfo)[subItem.fullname]
 											}
 											var array = []
 											if (subItem.points) {
@@ -154,6 +156,7 @@
 		},
 		mounted() {},
 		created() {
+		
 			this.$store.state.alarmData && this.$store.state.alarmData.alarms.map((item) => {
 				this.alarmData[item.rel] = item
 			})
