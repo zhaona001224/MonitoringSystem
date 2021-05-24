@@ -216,7 +216,6 @@
 			const that = this
 			this.centrifuge.subscribe("alarmdata", function(message) {
 				if (message.data.timestamp && that.activeIndex == 1) {
-					debugger
 					that.tableData = message.data.alarms || [];
 					that.dealData();
 				}
