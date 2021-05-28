@@ -18,24 +18,32 @@
 					 header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="quantity" label="装机数"
 					 width="216px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center"  label="寿命 （月）"
-					 width="216px" cell-class-name="center" header-align="center">
-					 <template slot-scope="scope"> <div style="line-height: 63px;font-size: 22px;    color: #4081ff;
-" @click="fix(scope.row,1)">{{scope.row.life}}</div> </template>
+					<el-table-column align="center" label="寿命 （月）" width="216px"
+					 cell-class-name="center" header-align="center">
+						<template slot-scope="scope">
+							<div style="line-height: 63px;font-size: 22px;    color: #4081ff;
+" @click="fix(scope.row,1)">{{scope.row.life}}</div>
+						</template>
 					</el-table-column>
-					<el-table-column align="center"  label="更换日期"
-					 width="280px" cell-class-name="center" header-align="center"> 
-					 <template slot-scope="scope"> <div style="line-height: 63px;font-size: 22px;    color: #4081ff;
-" @click="fix(scope.row,1)">{{scope.row.target}}</div> </template>
+					<el-table-column align="center" label="更换日期" width="280px" cell-class-name="center"
+					 header-align="center">
+						<template slot-scope="scope">
+							<div style="line-height: 63px;font-size: 22px;    color: #4081ff;
+" @click="fix(scope.row,1)">{{scope.row.target}}</div>
+						</template>
 					</el-table-column>
-					<el-table-column align="center" prop="next" label="下次更换日期"
-					 width="280px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="next" label="下次更换日期" width="280px" cell-class-name="center"
+					 header-align="center"> </el-table-column>
 				</el-table>
 			</div>
 		</div>
 		<el-dialog title="" :visible.sync="showTip" width="33%">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
 			<div style="margin-bottom: 30px;" v-if="type!=1">上述维护工作已完成？</div>
+			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">口令</span>
+				<el-input style="width: 260px; height: 40px"
+				 v-model="activeObj.pass" type="password" placeholder="请输入口令"></el-input>
+			</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">装机数</span>
 				<el-input style="width: 260px; height: 40px"
 				 v-model="activeObj.quantity" type="number" placeholder="请输入装机数"></el-input>
@@ -75,7 +83,7 @@
 				alarmData: [],
 				showTip: false,
 				activeObj: {},
-				type:''
+				type: ''
 			};
 		},
 		methods: {
@@ -94,81 +102,102 @@
 				this.activeObj.next = year + "-" + month + '-' + date
 			},
 			sendData() {
-				if (!this.activeObj.quantity) {
+				if (!this.activeObj.pass) {
 					this.$message({
-						message: "请填写数量!",
+						message: "请输入口令!",
 						type: "warning",
 					});
 					return
-				}
-				if (!this.activeObj.life) {
-					this.$message({
-						message: "请填写寿命!",
-						type: "life",
-					});
-					return
-				}
-				if (!this.activeObj.target) {
-					this.$message({
-						message: "请选择日期!",
-						type: "warning",
-					});
-					return
-				}
-				this.activeObj.quantity = this.activeObj.quantity * 1
-				this.activeObj.life = this.activeObj.life * 1
-				var obj = {
-					cmd: "cmd",
-					alarmclass: "L",
-					data: JSON.stringify(this.activeObj),
-				};
-				const that = this;
-				if (this.type === 1) {
-					this.$post("/admin/v1/content/update?type=Lifepart&ID=" + this.activeObj
-						.id, {
-							next: this.activeObj.next,
-							target: this.activeObj.target,
-							quantity: this.activeObj.quantity,
-							life: this.activeObj.life,
-						}).then(response => {
-						if (response.retCode == 0) {
-							this.showTip = false;
-							that.$message({
-								message: "操作成功!",
-								type: "success",
-							});
-							that.activeObj = {}
-						} else {
-							that.$message({
-								type: 'warning',
-								message: response.message
-							});
-						}
-					})
 				} else {
-					this.centrifuge.publish("alarmdata", obj).then(function(res) {
-						that.showTip = false;
-						that.$message({
-							message: "操作成功!",
-							type: "success",
-						});
-						that.activeObj = {}
-					}, function(err) {
-						console.log("publish error", err);
-					});
-				}
-			},
+					this.$post("/api/v1/auth", {
+						user: localStorage.userName,
+						pass: this.activeObj.pass
+					}).then(response => {
+							if (response.retCode == 0) {
+								if (!this.activeObj.quantity) {
+									this.$message({
+										message: "请填写数量!",
+										type: "warning",
+									});
+									return
+								}
+								if (!this.activeObj.life) {
+									this.$message({
+										message: "请填写寿命!",
+										type: "life",
+									});
+									return
+								}
+								if (!this.activeObj.target) {
+									this.$message({
+										message: "请选择日期!",
+										type: "warning",
+									});
+									return
+								}
+								this.activeObj.quantity = this.activeObj.quantity * 1
+								this.activeObj.life = this.activeObj.life * 1
+								var obj = {
+									cmd: "cmd",
+									alarmclass: "L",
+									data: JSON.stringify(this.activeObj),
+								};
+								const that = this;
+								if (this.type === 1) {
+									this.$post("/admin/v1/content/update?type=Lifepart&ID=" + this.activeObj
+										.id, {
+											next: this.activeObj.next,
+											target: this.activeObj.target,
+											quantity: this.activeObj.quantity,
+											life: this.activeObj.life,
+										}).then(response => {
+										if (response.retCode == 0) {
+											this.showTip = false;
+											that.$message({
+												message: "操作成功!",
+												type: "success",
+											});
+											that.activeObj = {}
+										} else {
+											that.$message({
+												type: 'warning',
+												message: response.message
+											});
+										}
+									})
+								} else {
+									this.centrifuge.publish("alarmdata", obj).then(function(res) {
+										that.showTip = false;
+										that.$message({
+											message: "操作成功!",
+											type: "success",
+										});
+										that.activeObj = {}
+									}, function(err) {
+										console.log("publish error", err);
+									});
+								}
+							} else {
+								that.$message({
+									type: 'warning',
+									message: '口令错误'
+								});
+							}
+						
+					})
+			}
 		},
-		mounted() {
-			const that = this
-			this.centrifuge.subscribe("alarmdata", function(message) {
-				if (message.data.timestamp) {
-					console.log(message.data.lifes)
-					that.alarmData = message.data.lifes;
-					that.tableData = message.data.lifes.filter((item) => !item.isWarning) || []
-				}
-			});
-		}
+	},
+	mounted() {
+		const that = this
+		this.centrifuge.subscribe("alarmdata", function(message) {
+			if (message.data.timestamp) {
+				console.log(message.data.lifes)
+				that.alarmData = message.data.lifes;
+				that.tableData = message.data.lifes.filter((item) => !item.isWarning) || []
+			}
+		});
+	}
 	};
 </script>
 <style lang="less" scoped>

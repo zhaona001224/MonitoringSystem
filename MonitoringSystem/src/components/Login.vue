@@ -34,7 +34,6 @@
 			this.doKeyCode()
 			if (localStorage.token) {
 				this.$router.push('/schematicDia')
-								
 			}
 		},
 		data() {
@@ -91,6 +90,7 @@
 							password: that.login.userPwd
 						}).then(response => {
 							if (response.retCode == 0) {
+								localStorage.setItem('userName', that.login.userName);
 								localStorage.setItem('token', response.data);
 								this.loginData = JSON.parse(response.contents);
 								that.$message({

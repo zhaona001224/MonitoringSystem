@@ -3,11 +3,11 @@
 		<viewer :options="options" @inited="inited" ref="viewer" :images="imgShow" v-if="imgShow.length>0">
 		<img style="display: none;" v-for="(item,index) in imgShow" :src="item" :key="index"
 			/> </viewer>
-		<div class="left" @click="clickGeneratePicture" ref="imageDom" v-if="rightList[activeIndex]">
-		<img :src="require('@/assets/image/schematicDia/'+(rightList[activeIndex].name)+'-Model.jpg')"
+		<div class="left"  ref="imageDom" v-if="rightList[activeIndex]">
+		<img @click="clickGeneratePicture" :src="require('@/assets/image/schematicDia/'+(rightList[activeIndex].name)+'-Model.jpg')"
 			/>
 			<div :class="item.location[1]>0.8?'absolute-style left-style':'absolute-style'"
-			 v-if="item.location" :style="'top:'+item.location[0]*100+'%;left:'+item.location[1]*100+'%'"
+			 v-if="item.location&&!item.notShow" :style="'top:'+item.location[0]*100+'%;left:'+item.location[1]*100+'%'"
 			 v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].deviceList">
 				<!--<img class="device-img" v-if="item.pic" :src="imgUrl+item.pic" />-->
 				<div>
@@ -15,14 +15,21 @@
 						<div class="tip-left"> <img v-if="!item.isWarning" src="../assets/image/schematicDia/greencheck.png"
 							/> <img v-else src="../assets/image/schematicDia/redwarning.png" /> </div>
 						<div class="tip-right">
-							<div v-for="(subItem,subIndex) in item.point">
+							<div @click.stop="queryTabel(subItem)" v-for="(subItem,subIndex) in item.point">
 								<div class="blink" v-if="alarmData[subItem.datakey]"> {{alarmData[subItem.datakey].name}} </div>
-								<div> {{subItem.name}} {{$store.state.baseData[subItem.datakey]}}{{subItem.unit}}
+								<div> {{subItem.name}} {{$store.state.baseData[subItem.offset]}}{{subItem.unit}}
 									</div>
 							</div>
 						</div>
-						<div class="close" @click="changeStatus(index,'Green')">×</div>
+						<div class="close" @click="changeStatus(index)">×</div>
 					</div>
+				</div>
+			</div>
+			<div class="pop" @click="showTable=false" v-if="showTable">
+				<div class="close" @click="showTable=false">×</div>
+				<div class="container" @click.stop="">
+					<div class="title">{{activeTitle}}</div>
+					<div class="chart" id="myChart"> </div>
 				</div>
 			</div>
 		</div>
@@ -45,6 +52,8 @@
 				activeIndex: 1,
 				pointList: {},
 				imgShow: [],
+				showTable: false,
+				activeTitle: '',
 				options: {
 					"button": false,
 					"navbar": false,
@@ -58,6 +67,7 @@
 					"transition": true,
 					"fullscreen": true
 				},
+				echartData: {},
 				alarmData: {}
 			}
 		},
@@ -69,8 +79,7 @@
 				this.imgShow = []
 			},
 			changeStatus(index, str) {
-				this.rightList[activeIndex]['notShow' + str] = !this.rightList[activeIndex]
-					['show' + str]
+				this.rightList[this.activeIndex].deviceList[index].notShow = !this.rightList[this.activeIndex].deviceList[index].notShow
 				this.$forceUpdate()
 			},
 			judge() {
@@ -83,6 +92,146 @@
 						})
 					})
 				})
+			},
+			queryTabel(item) {
+				this.start = new Date(new Date() - 5 * 60 * 1000);
+				this.activeTitle = item.name
+				this.end = new Date(); //获取当天23:59:59的时间
+				const url = "/log/history/"
+				this.$get(url + item.datakey + '?start=' + this.start.getTime() + '&end=' +
+					this.end.getTime(), {}).then(response => {
+					this.tableData = response.data || []
+					this.dealData()
+				})
+			},
+			dealData() {
+				this.echartData.data1 = []
+				this.echartData.data2 = []
+				this.echartData.data3 = []
+				this.echartData.data4 = []
+				this.tableData.map((item) => {
+					const datetime = new Date(item.timestamp)
+					const year = datetime.getFullYear()
+					const month = ("0" + (datetime.getMonth() + 1)).slice(-2)
+					const date = ("0" + datetime.getDate()).slice(-2)
+					const hour = ("0" + datetime.getHours()).slice(-2)
+					const minute = ("0" + datetime.getMinutes()).slice(-2)
+					const second = ("0" + datetime.getSeconds()).slice(-2)
+					item.date = year + "-" + month + '-' + date
+					item.time = hour + ':' + minute + ':' + second
+					const array = this.pointData[this.point].data.split(',')
+					this.echartData.data1.push(item.date + ' ' + item.time)
+					if (this.activeIndex === 2) {
+						this.echartData.data2.push(item.value)
+					} else {
+						this.echartData.data2.push(item[this.point])
+					}
+					this.echartData.data3.push(array[0])
+					this.echartData.data4.push(array[1])
+				})
+				this.showTable = true
+				if (this.tableData.length > 0) {
+					setTimeout(() => {
+						this.drawLine()
+					}, 500)
+				}
+			},
+			drawLine() {
+				let myChart = this.$echarts.init(document.getElementById("myChart"))
+				let option = {
+					color: ['#ff150a', '#fd9e5e'],
+					title: {
+						subtext: '单位：m³/h'
+					},
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'cross',
+							label: {
+								backgroundColor: '#fff'
+							}
+						}
+					},
+					legend: {
+						data: ['报警线', '预警线'],
+						left: 'right',
+					},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					xAxis: [{
+						type: 'category',
+						boundaryGap: false,
+						axisLabel: {
+							show: true,
+							textStyle: {
+								color: '#333',
+								fontSize: 14,
+								lineHeight: 80,
+							}
+						},
+						data: this.echartData.data1
+					}],
+					yAxis: [{
+						type: 'value',
+						axisLabel: {
+							show: true,
+							textStyle: {
+								color: '#333',
+								fontSize: 24,
+							}
+						},
+					}],
+					series: [{
+						name: '',
+						type: 'line',
+						stack: '总量',
+						smooth: true,
+						lineStyle: {
+							width: 4,
+							color: '#3c7cf5'
+						},
+						showSymbol: false,
+						areaStyle: {
+							opacity: 0.4,
+							color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+								offset: 0.1,
+								color: '#3c7cf5'
+							}, {
+								offset: 1,
+								color: '#fff'
+							}])
+						},
+						emphasis: {
+							focus: 'series'
+						},
+						data: this.echartData.data2,
+					}, {
+						name: '预警线',
+						data: this.echartData.data3,
+						type: 'line',
+						symbolSize: 0,
+						lineStyle: {
+							color: '#fc8c3a',
+							width: 3,
+							type: 'dashed'
+						}
+					}, {
+						name: '报警线',
+						data: this.echartData.data4,
+						type: 'line',
+						symbolSize: 0,
+						lineStyle: {
+							color: '#ff150a',
+							width: 3,
+							type: 'dashed'
+						}
+					}]
+				};
+				myChart.setOption(option);
 			},
 			getBaseData() {
 				this.$get("/admin/v1/contents?type=Point&offset=-1&count=-1", {}).then(
@@ -119,8 +268,8 @@
 										if (item.devices.indexOf(subItem.ID) > -1) {
 											if (item.deviceinfo && item.deviceinfo != '--remove--') {
 												item.deviceinfo = item.deviceinfo.replace(/<[^>]+>/g, "");
-
-												subItem.location = item.deviceinfo&&JSON.parse(item.deviceinfo)[subItem.fullname]
+												subItem.location = item.deviceinfo && JSON.parse(item.deviceinfo)[
+													subItem.name]
 											}
 											var array = []
 											if (subItem.points) {
@@ -156,7 +305,6 @@
 		},
 		mounted() {},
 		created() {
-		
 			this.$store.state.alarmData && this.$store.state.alarmData.alarms.map((item) => {
 				this.alarmData[item.rel] = item
 			})
@@ -166,21 +314,32 @@
 </script>
 <style lang="less" scoped>
 	.pop {
-		position: fixed;
+		position: absolute;
 		left: 0;
 		top: 0;
 		width: 100%;
 		height: 100%;
 		background: rgba(0, 0, 0, 0.6);
 		z-index: 100;
-		img {
-			position: fixed;
-			left: 50%;
-			margin-left: -673px;
-			top: 50%;
-			margin-top: -467px;
-			width: 1346px;
-			height: 934px;
+		.close {
+			position: absolute;
+			right: 20px;
+			color: #fff;
+			top: 0;
+			font-size: 40px;
+		}
+		.container {
+			padding: 50px;
+			margin: 60px auto 0;
+			width: 1000px;
+			height: 710px;
+			background: #fff;
+		}
+		.title {
+			font-size: 20px;
+		}
+		.chart {
+			height: 600px;
 		}
 	}
 	

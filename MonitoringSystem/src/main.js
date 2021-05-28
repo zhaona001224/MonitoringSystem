@@ -40,6 +40,7 @@ var centrifuge = new Centrifuge("ws://216.24.249.93:8000/connection/websocket", 
 centrifuge.connect();
 
 var subscription = centrifuge.subscribe("alarmdata", function(message) {
+
 	if(message.data.timestamp){
 		store.commit(types.ALARMDATA, message.data);
 	}
@@ -48,7 +49,7 @@ var subscription = centrifuge.subscribe("alarmdata", function(message) {
 });
 var subscription = centrifuge.subscribe("keepdata", function(message) {
 	console.log(message.data)
-	store.commit(types.BASEDATA, message.data);
+	store.commit(types.BASEDATA, message.data.data);
 });
 Vue.prototype.centrifuge = centrifuge;
 new Vue({

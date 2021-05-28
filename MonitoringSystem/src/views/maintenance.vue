@@ -18,11 +18,15 @@
 					 header-align="center"> </el-table-column>
 					<el-table-column align="center" label="保养周期" width="180px"
 					 cell-class-name="center" header-align="center">
-						<template slot-scope="scope"> <div style="line-height: 63px;font-size: 22px;    color: #4081ff;"  @click="fix(scope.row,1)">{{scope.row.duration}}</div> </template>
+						<template slot-scope="scope">
+							<div style="line-height: 63px;font-size: 22px; ">{{scope.row.duration}}</div>
+						</template>
 					</el-table-column>
 					<el-table-column align="center" label="保养日期" width="308px" cell-class-name="center"
 					 header-align="center">
-						<template slot-scope="scope"> <div style="line-height: 63px;font-size: 22px;    color: #4081ff;" @click="fix(scope.row,1)">{{scope.row.start}}</div> </template>
+						<template slot-scope="scope">
+							<div style="line-height: 63px;font-size: 22px;">{{scope.row.start}}</div>
+						</template>
 					</el-table-column>
 					<el-table-column align="center" prop="end" label="下次保养日期" width="308px" cell-class-name="center"
 					 header-align="center"> </el-table-column>
@@ -32,6 +36,10 @@
 		<el-dialog title="" :visible.sync="showTip" width="33%">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
 			<div style="margin-bottom: 30px;" v-if="type!=1">上述维护工作已完成？</div>
+			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">口令</span>
+				<el-input style="width: 260px; height: 40px"
+				 v-model="activeObj.pass" type="password" placeholder="请输入口令"></el-input>
+			</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">周期</span>
 				<el-input style="width: 260px; height: 40px"
 				 v-model="activeObj.duration" @change="changeDate" type="number" placeholder="请输入周期"></el-input>
@@ -83,73 +91,90 @@
 				this.activeObj.end = year + "-" + month + '-' + date
 			},
 			sendData() {
-				if (!this.activeObj.duration) {
+				if (!this.activeObj.pass) {
 					this.$message({
-						message: "请填写周期!",
+						message: "请输入口令!",
 						type: "warning",
 					});
 					return
-				}
-				if (!this.activeObj.start) {
-					this.$message({
-						message: "请选择日期!",
-						type: "warning",
-					});
-					return
-				}
-				this.activeObj.duration = this.activeObj.duration * 1
-				if (this.type === 1) {
-					this.$post("/admin/v1/content/update?type=Maintenance&ID=" + this.activeObj
-						.id, {
-							end:this.activeObj.end,
-							start:this.activeObj.start,
-							duration:this.activeObj.duration,
-							unit:this.activeObj.unit,
-						}).then(response => {
-						if (response.retCode == 0) {
-							this.showTip = false;
-							that.$message({
-								message: "操作成功!",
-								type: "success",
-							});
-							that.activeObj = {}
-						} else {
-							that.$message({
-								type: 'warning',
-								message: response.message
-							});
-						}
-					})
 				} else {
-					var obj = {
-						cmd: "cmd",
-						alarmclass: "M",
-						data: JSON.stringify(this.activeObj)
-					};
-					const that = this;
-					this.centrifuge.publish("alarmdata", obj).then(function(res) {
-						that.showTip = false;
-						that.$message({
-							message: "操作成功!",
-							type: "success",
-						});
-						that.activeObj = {}
-					}, function(err) {
-						console.log("publish error", err);
-					});
-				}
-			},
+					this.$post("/api/v1/auth", {
+						user: localStorage.userName,
+						pass: this.activeObj.pass
+					}).then(response => {
+							if (response.retCode == 0) {
+								if (!this.activeObj.duration) {
+									this.$message({
+										message: "请填写周期!",
+										type: "warning",
+									});
+									return
+								}
+								if (!this.activeObj.start) {
+									this.$message({
+										message: "请选择日期!",
+										type: "warning",
+									});
+									return
+								}
+								this.activeObj.duration = this.activeObj.duration * 1
+								if (this.type === 1) {
+									this.$post("/admin/v1/content/update?type=Maintenance&ID=" + this.activeObj
+										.id, {
+											end: this.activeObj.end,
+											start: this.activeObj.start,
+											duration: this.activeObj.duration,
+											unit: this.activeObj.unit,
+										}).then(response => {
+										if (response.retCode == 0) {
+											this.showTip = false;
+											that.$message({
+												message: "操作成功!",
+												type: "success",
+											});
+											that.activeObj = {}
+										} else {
+											that.$message({
+												type: 'warning',
+												message: response.message
+											});
+										}
+									})
+								} else {
+									var obj = {
+										cmd: "cmd",
+										alarmclass: "M",
+										data: JSON.stringify(this.activeObj)
+									};
+									const that = this;
+									this.centrifuge.publish("alarmdata", obj).then(function(res) {
+										that.showTip = false;
+										that.$message({
+											message: "操作成功!",
+											type: "success",
+										});
+										that.activeObj = {}
+									}, function(err) {
+										console.log("publish error", err);
+									});
+								}
+							}
+						
+					})
+			}
 		},
-		mounted() {
-			const that = this;
-			this.centrifuge.subscribe("alarmdata", function(message) {
-				if (message.data.timestamp) {
-					console.log(message.data.maintains)
-					that.alarmData = message.data.maintains;
-					that.tableData = message.data.maintains.filter((item) => !item.isWarning) || []
-				}
-			});
-		}
+	},
+	mounted() {
+		const that = this;
+		this.centrifuge.subscribe("alarmdata", function(message) {
+			
+			if (message.data.timestamp) {
+				console.log(message.data.maintains)
+				that.alarmData = message.data.maintains;
+				that.tableData = message.data.maintains.filter((item) => !item.isWarning) || []
+			}
+		});
+	}
 	};
 </script>
 <style lang="less" scoped>

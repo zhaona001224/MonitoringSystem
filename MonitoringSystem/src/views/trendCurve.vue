@@ -78,6 +78,7 @@
 				this.echartData.data3 = []
 				this.echartData.data4 = []
 				this.tableData.map((item) => {
+					
 					const datetime = new Date(item.timestamp)
 					const year = datetime.getFullYear()
 					const month = ("0" + (datetime.getMonth() + 1)).slice(-2)
@@ -89,7 +90,12 @@
 					item.time = hour + ':' + minute + ':' + second
 					const array = this.pointData[this.point].data.split(',')
 					this.echartData.data1.push(item.date + ' ' + item.time)
-					this.echartData.data2.push(item.value)
+					if(this.activeIndex===2){
+						this.echartData.data2.push(item.value)
+					}else{
+						this.echartData.data2.push(item[this.point])
+					}
+					
 					this.echartData.data3.push(array[0])
 					this.echartData.data4.push(array[1])
 				})
@@ -208,7 +214,7 @@
 			}
 		},
 		created() {
-			this.start = new Date(new Date() - 60 * 60 * 1000);
+			this.start = new Date(new Date() - 24*60 * 60 * 1000);
 			this.end = new Date(); //获取当天23:59:59的时间
 			this.getData()
 		},

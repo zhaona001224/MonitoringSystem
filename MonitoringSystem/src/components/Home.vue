@@ -15,7 +15,7 @@
 					<el-col class="header-right">
 						<div class="header-right-cont">
 							<el-dropdown trigger="hover"> <span class="el-dropdown-link userinfo-inner">
-              <span>{{ userInfo.email }}</span> <i class="el-icon-caret-bottom"></i>								</span>
+              <span>{{ email }}</span> <i class="el-icon-caret-bottom"></i>								</span>
 								<el-dropdown-menu slot="dropdown">
 									<el-dropdown-item @click.native="doLoginOut"> <i class="el-icon-circle-close-outline"></i> 退出登录 </el-dropdown-item>
 								</el-dropdown-menu>
@@ -78,6 +78,9 @@
 				},{
 					text: '寿命件管理',
 					path: '/lifePart'
+				},{
+					text: '资料库',
+					path: '/blank'
 				}],
 				backUpType: "",
 				visible2: false,
@@ -121,7 +124,7 @@
 			}
 		},
 		created() {
-			this.userInfo = {}
+			this.email =localStorage.userName
 			this.onRoutes = this.$route.fullPath
 		},
 		mounted() {
@@ -206,5 +209,8 @@
 		padding-bottom:0; 
 		padding-left: 0;
 		padding-right: 0;
+	}
+	.el-dropdown-menu.el-popper{
+		width: 110px;
 	}
 </style>

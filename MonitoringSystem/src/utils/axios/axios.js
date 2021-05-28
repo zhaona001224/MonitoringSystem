@@ -68,7 +68,7 @@ axios.interceptors.response.use(response => {
 	if(response.data && typeof response.data == "object") {
 		if(response.data.retCode === -1) {
 			Vue.prototype.$message({
-				message: response.data.message,
+				message: response.data.Msg,
 				type: 'error'
 			})
 		

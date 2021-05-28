@@ -126,14 +126,23 @@
             align="center"
             header-align="center"
             prop="key"
-            label="编号22"
+            label="编号"
             width="180px"
           >
           </el-table-column>
           <el-table-column
             align="center"
             prop="date"
-            label="日期"
+            label="初始时间"
+            width="200px"
+            cell-class-name="center"
+            header-align="center"
+          >
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="last"
+            label="最新时间"
             width="200px"
             cell-class-name="center"
             header-align="center"
@@ -357,7 +366,6 @@ export default {
         data: JSON.stringify(this.activeObj),
       };
       const that = this;
-      debugger
       this.centrifuge.publish("alarmdata", obj).then(
         function (res) {
           that.showTip2 = false;

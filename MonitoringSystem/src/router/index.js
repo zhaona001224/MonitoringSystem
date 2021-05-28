@@ -44,6 +44,11 @@ const routes = [{
             name: 'lifePart',
             component: resolve => require(['@/views/lifePart'], resolve),
 
+        },{
+        	path: 'blank',
+            name: 'blank',
+            component: resolve => require(['@/views/blank'], resolve),
+
         }]
     },
 	
