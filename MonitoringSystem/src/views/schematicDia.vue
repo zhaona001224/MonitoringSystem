@@ -101,10 +101,10 @@
 				this.$get(url + item.datakey + '?start=' + this.start.getTime() + '&end=' +
 					this.end.getTime(), {}).then(response => {
 					this.tableData = response.data || []
-					this.dealData()
+					this.dealData(item)
 				})
 			},
-			dealData() {
+			dealData(obj) {
 				this.echartData.data1 = []
 				this.echartData.data2 = []
 				this.echartData.data3 = []
@@ -119,13 +119,10 @@
 					const second = ("0" + datetime.getSeconds()).slice(-2)
 					item.date = year + "-" + month + '-' + date
 					item.time = hour + ':' + minute + ':' + second
-					const array = this.pointData[this.point].data.split(',')
+					const array = this.pointList[obj.ID].data.split(',')
 					this.echartData.data1.push(item.date + ' ' + item.time)
-					if (this.activeIndex === 2) {
-						this.echartData.data2.push(item.value)
-					} else {
-						this.echartData.data2.push(item[this.point])
-					}
+					debugger
+					this.echartData.data2.push(item[obj.datakey])
 					this.echartData.data3.push(array[0])
 					this.echartData.data4.push(array[1])
 				})
