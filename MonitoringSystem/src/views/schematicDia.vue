@@ -121,7 +121,6 @@
 					item.time = hour + ':' + minute + ':' + second
 					const array = this.pointList[obj.ID].data.split(',')
 					this.echartData.data1.push(item.date + ' ' + item.time)
-					debugger
 					this.echartData.data2.push(item[obj.datakey])
 					this.echartData.data3.push(array[0])
 					this.echartData.data4.push(array[1])
