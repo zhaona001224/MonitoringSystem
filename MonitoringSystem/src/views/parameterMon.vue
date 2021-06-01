@@ -5,7 +5,7 @@
 				<li v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].positions"
 				 :key="item"><span class="index">{{pointList[item].datakey}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
 					<div class="value ">
-						<div :class="'color1 '+getStyle(item)">{{$store.state.baseData[pointList[item].datakey]}}</div>
+						<div :class="'color1 '+getStyle(item)">{{$store.state.baseData[pointList[item].ID]}}</div>
 						<div class="sub-title">运行值</div>
 					</div>
 					<div class="split"></div>
@@ -58,7 +58,7 @@
 				}
 			},
 			getStyle(item) {
-				const value = this.$store.state.baseData[this.pointList[item].datakey]
+				const value = this.$store.state.baseData[this.pointList[item].ID]
 				const obj = this.pointList[item]
 				const array = obj.data.split(',')
 				if (obj.direction === "+") {
