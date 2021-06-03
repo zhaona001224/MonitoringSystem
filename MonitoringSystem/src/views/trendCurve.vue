@@ -3,8 +3,7 @@
 		<div class="tab">
 			<div class="li" @click="changeTab(index)" v-for="(item,index) in tabList" :key="index"><span class="li" :class="index==activeIndex?'active':''">
 			<img v-if="index===activeIndex" :src="require('../assets/image/faultsInquiries/tab'+(index+1)+'-1.png')"/>
-			<img v-else :src="require('../assets/image/faultsInquiries/tab'+(index+1)+'.png')"/>
-			{{item}}
+			<img v-else :src="require('../assets/image/faultsInquiries/tab'+(index+1)+'.png')"/>{{item}}
 			</span><span v-if="index!==activeIndex&&index!==tabList.length-1" class="split"></span></div>
 		</div>
 		<div class="box-card">
@@ -30,7 +29,7 @@
 		data() {
 			return {
 				tabList: ['历史数据查询', '实时报警查询', '历史报警查询'],
-				activeIndex: 0,
+				activeIndex: 1,
 				start: '',
 				end: '',
 				options: [],
@@ -48,7 +47,7 @@
 						this.pointData[item.datakey] = item
 					})
 					this.point = response.data[0] && response.data[0].datakey
-					this.queryTabel()
+					
 				})
 			},
 			//校验时间格式
@@ -90,10 +89,11 @@
 					item.time = hour + ':' + minute + ':' + second
 					const array = this.pointData[this.point].data.split(',')
 					this.echartData.data1.push(item.date + ' ' + item.time)
-					if(this.activeIndex===2){
-						this.echartData.data2.push(item.value)
-					}else{
+		
+					if(this.activeIndex===0){
 						this.echartData.data2.push(item[this.point])
+					}else{
+						this.echartData.data2.push(item.value)
 					}
 					
 					this.echartData.data3.push(array[0])
@@ -220,10 +220,13 @@
 		},
 		mounted() {
 			const that = this
-			this.centrifuge.subscribe("alarmdata", function(message) {
-				if (message.data.timestamp && that.activeIndex == 1) {
+			this.centrifuge.subscribe("alarmdata", (message)=> {
+				console.log(that.activeIndex)
+				if (message.data.timestamp && that.activeIndex === 1) {
+					
 					that.tableData = message.data.alarms || [];
-					that.dealData();
+					if(that.point) that.dealData();
+					
 				}
 			});
 		},
