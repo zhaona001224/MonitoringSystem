@@ -3,7 +3,7 @@
 		<div class="left">
 			<ul class="table-style">
 				<li v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].positions"
-				 :key="item"><span class="index">{{pointList[item].datakey}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
+				 :key="item"><span class="index">{{index+1}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
 					<div class="value ">
 						<div :class="'color1 '+getStyle(item)">{{$store.state.baseData[pointList[item].offset]}}</div>
 						<div class="sub-title">运行值</div>
@@ -45,15 +45,16 @@
 			getValue(item, type) {
 				const obj = this.pointList[item]
 				const array = obj.data.split(',')
+				var str=array[type]||0
 				if (obj.direction === '+') {
-					return ('>' + array[type])
+					return ('>' + str)
 				} else if (obj.direction === '-') {
-					return ('<' + array[type])
+					return ('<' + str)
 				} else if (obj.direction === '=') {
 					if (type === 0) {
-						return ('>' + array[type])
+						return ('>' + str)
 					} else {
-						return ('<' + array[type])
+						return ('<' + str)
 					}
 				}
 			},

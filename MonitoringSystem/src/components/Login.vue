@@ -57,7 +57,7 @@
 				isShowTip: false,
 				//登录
 				login: {
-					userName: "", //lq@163.com
+					userName: "admin@monitor", //lq@163.com
 					userPwd: "" //qweasdzxc
 				},
 				//登录信息验证

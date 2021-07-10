@@ -37,9 +37,9 @@ let loading;
 let i = 0;
 axios.interceptors.request.use(config => {
 	config.headers.lqcms_token = localStorage.token;
-	if(config.url.indexOf('/payment/paypal/info/' == -1)) {
+	if(config.url.indexOf('/alarm/history/') == -1) {
 		i++;
-
+		
 		loading = Vue.prototype.$loading({
 			lock: true,
 			text: '',

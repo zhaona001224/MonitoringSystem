@@ -42,7 +42,7 @@
 			<div style="margin-bottom: 30px;" v-if="type!=1">上述维护工作已完成？</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">口令</span>
 				<el-input style="width: 260px; height: 40px"
-				 v-model="activeObj.pass" type="password" placeholder="请输入口令"></el-input>
+				 v-model="activeObj.pass" type="number" placeholder="请输入口令"></el-input>
 			</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">装机数</span>
 				<el-input style="width: 260px; height: 40px"
