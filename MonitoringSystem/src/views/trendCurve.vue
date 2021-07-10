@@ -14,12 +14,12 @@
 						</el-option>
 					</el-select>
 				</div>
-				<div v-if="activeIndex!=1"> 开始
+				<div v-if="activeIndex==1"> 开始
 					<el-date-picker v-model="start" type="datetime" placeholder="选择日期时间"> </el-date-picker> 结束
 					<el-date-picker v-model="end" type="datetime" placeholder="选择日期时间">
 					</el-date-picker>
 				</div>
-				<el-button v-if="activeIndex!=1" type="primary" class="common-btn" @click="queryTabel">显示</el-button>
+				<el-button  type="primary" class="common-btn" @click="queryTabel">显示</el-button>
 			</el-row>
 			<div v-if="tableData.length>0" class="chart" id="myChart"> </div>
 		</div>
@@ -30,8 +30,8 @@
 		name: 'trendCurve',
 		data() {
 			return {
-				tabList: ['历史数据查询', '实时报警查询', '历史报警查询'],
-				activeIndex: 1,
+				tabList: ['实时趋势曲线', '历史趋势曲线'],
+				activeIndex: 0,
 				start: '',
 				end: '',
 				options: [],
@@ -50,6 +50,7 @@
 							this.pointData[item.datakey] = item
 						})
 						this.point = response.data[0] && response.data[0].datakey
+						this.changeTab(0)
 					})
 			},
 			//校验时间格式
@@ -66,15 +67,19 @@
 			},
 			changeTab(index) {
 				this.activeIndex = index
-				if (index === 1) {
-					this.start = new Date(new Date() -60 * 60 * 1000);
-					this.end = new Date(); //获取当天23:59:59的时间
-					this.queryTabel()
+				if(this.interVal){
+					clearInterval(this.interVal)
+				}
+				if(this.myChart){
+					this.myChart.clear()
+				}
+				if (index === 0) {
+					this.start = new Date(new Date() -60 * 60 * 1000);	
 				} else {
 					this.start = new Date(new Date() - 24 * 60 * 60 * 1000);
-					this.end = new Date(); //获取当天23:59:59的时间
-					this.queryTabel()
 				}
+				this.end = new Date(); //获取当天23:59:59的时间
+					this.queryTabel()
 			},
 			dealData() {
 				this.echartData.data1 = []
@@ -93,11 +98,7 @@
 					item.time = hour + ':' + minute + ':' + second
 					const array = this.pointData[this.point].data.split(',')
 					this.echartData.data1.push(item.date + ' ' + item.time)
-					if (this.activeIndex === 0) {
-						this.echartData.data2.push(item[this.point])
-					} else {
-						this.echartData.data2.push(item.value)
-					}
+					this.echartData.data2.push(item[this.point])
 					this.echartData.data3.push(array[0])
 					this.echartData.data4.push(array[1])
 				})
@@ -108,7 +109,7 @@
 				}
 			},
 			queryTabel() {
-				const url = this.activeIndex === 0 ? "/log/history/" : "/alarm/history/"
+				const url = "/log/history/"
 				this.$get(url + this.point + '?start=' + this.start.getTime() + '&end=' +
 					this.end.getTime(), {}).then(response => {
 					this.tableData = response.data || []
@@ -116,7 +117,7 @@
 				})
 			},
 			drawLine() {
-				let myChart = this.$echarts.init(document.getElementById("myChart"))
+				this.myChart = this.$echarts.init(document.getElementById("myChart"))
 				let option = {
 					color: ['#ff150a', '#fd9e5e'],
 					title: {
@@ -210,21 +211,22 @@
 						}
 					}]
 				};
-				myChart.setOption(option);
+				this.myChart.setOption(option);
 			}
 		},
 		created() {
 			this.start = new Date(new Date() - 24 * 60 * 60 * 1000);
 			this.end = new Date(); //获取当天23:59:59的时间
 			this.getData()
+			
 		},
 		mounted() {
 			const that = this
-			this.centrifuge.subscribe("alarmdata", (message) => {
-				if (message.data.timestamp && that.activeIndex === 1) {
-					this.changeTab(1)
+			this.interVal=setInterval(()=>{
+				if (this.activeIndex === 0) {
+					this.changeTab(0)
 				}
-			});
+			},10000)
 		},
 	}
 </script>
