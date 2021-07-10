@@ -62,14 +62,10 @@
 					<el-table-column align="center" header-align="center" label="编号" width="100px">
 						<template slot-scope="scope"> <span class="index">{{scope.$index+1}} </span> </template>
 					</el-table-column>
-					<el-table-column align="center" prop="start" label="初始时间" width="200px" cell-class-name="center"
+					<el-table-column align="center" prop="start" label="初始时间" width="240px" cell-class-name="center"
 					 header-align="center"> </el-table-column>
 					<el-table-column align="center" prop="latest" label="最新时间"
-					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="timestamp" label="时间"
-					 width="200px" cell-class-name="center" header-align="center">
-					 <template slot-scope="scope"> {{scope.row.timestamp}} </template>
-					</el-table-column>
+					 width="240px" cell-class-name="center" header-align="center"> </el-table-column>
 					<el-table-column align="center"  label="报警内容"
 					 width="410px" cell-class-name="center" header-align="center"> 
 					<template slot-scope="scope"> {{scope.row.name}} </template>
@@ -93,14 +89,16 @@
 					<el-table-column align="center" header-align="center" label="编号" width="200px">
 						<template slot-scope="scope"> <span class="index">{{scope.$index+1}} </span> </template>
 					</el-table-column>
-					<el-table-column align="center" prop="updated" label="日期" width="200px" cell-class-name="center"
+					<el-table-column align="center" prop="date" label="日期" width="200px" cell-class-name="center"
 					 header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="时间"
+					<el-table-column align="center" prop="time" label="时间"
 					 width="200px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="updated" label="报警内容"
-					 width="510px" cell-class-name="center" header-align="center"> </el-table-column>
-					<el-table-column align="center" prop="type" label="报警级别"
-					 width="300px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" prop="name" label="报警内容"
+					 width="710px" cell-class-name="center" header-align="center"> </el-table-column>
+					<el-table-column align="center" label="报警级别" width="160px"
+					 cell-class-name="center" header-align="center">
+						<template slot-scope="scope"> {{scope.row.type}} </template>
+					</el-table-column>
 				</el-table>
 			</div>
 			<el-dialog title="" :visible.sync="showTip1" width="30%">
@@ -172,8 +170,8 @@
 						var latest = new Date(item.latest * 1)
 						console.log(item.timestamp)
 						var timestamp = new Date(item.timestamp * 1)
-						item.start = this.getTimeDate(start)
-						item.latest = this.getTimeDate(latest)
+						item.start = this.getDateTime(start)+' '+this.getTimeDate(start)
+						item.latest =this.getDateTime(latest)+' '+this.getTimeDate(latest)
 						item.timestamp = this.getTimeDate(timestamp)
 					})
 				} else {
@@ -183,6 +181,7 @@
 						const datetime = new Date(item.timestamp);
 						item.date = this.getDateTime(datetime)
 						item.time = this.getTimeDate(datetime)
+					
 					});
 				}
 				this.$forceUpdate()
@@ -210,8 +209,7 @@
 				this.activeIndex = index;
 				this.tableData = []
 				if (index === 1) {
-					this.tableData = this.$store.state.alarmData.alarms || [];
-					this.dealData();
+					
 				} else {
 					this.queryTabel();
 				}

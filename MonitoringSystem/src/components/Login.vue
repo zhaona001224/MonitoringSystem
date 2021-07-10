@@ -8,15 +8,16 @@
 				<div class="right">
 					<div class="form-title">用户登录</div>
 					<el-form :model="login" :rules="rules" ref="login">
+						<NumKey ref="numKey" v-if="showKey" @confirmText="confirmText"></NumKey>
 						<el-form-item prop="userName">
 							<div class="img"><img src="../assets/image/login/user.png" /></div>
-							<el-input type="text" v-model="login.userName"
-							 placeholder="请输入账号" auto-complete="off"></el-input>
+							<el-input disabled class="disabled"
+							 type="text" v-model="login.userName" placeholder="请输入账号" auto-complete="off"></el-input>
 						</el-form-item>
 						<el-form-item prop="userPwd">
 							<div class="img"> <img src="../assets/image/login/pwd.png" /> </div>
 							<el-input type="password"
-							 v-model="login.userPwd" placeholder="请输入密码" auto-complete="off"></el-input>
+							 v-model="login.userPwd" @focus="showKey=true" placeholder="请输入密码" auto-complete="off"></el-input>
 						</el-form-item>
 						<el-button type="primary" class="login-btn" @click.native.prevent="doLogin('login')">登 录</el-button>
 					</el-form>
@@ -29,7 +30,11 @@
 <script>
 	import * as types from '../store/types'
 	import axios from 'axios'
+	import NumKey from '@/components/NumKey'
 	export default {
+		components: {
+			NumKey
+		},
 		created() {
 			this.doKeyCode()
 			if (localStorage.token) {
@@ -52,6 +57,7 @@
 				}
 			};
 			return {
+				showKey: false,
 				reload: false,
 				checked: true,
 				isShowTip: false,
@@ -73,12 +79,25 @@
 				},
 			}
 		},
-		methods: {
-			create() {
+		created() {
+				
+				var that=this
 				localStorage.removeItem('token');
 				localStorage.removeItem('loginData');
-				document.cookie = ''
-				state.token = null;
+				
+				document.addEventListener('click', (e) => {
+					console.log(e.target)
+					if(e.target.className==='el-input__inner'||e.target.className==='el-form') return
+					if (that.$refs.numKey&&!that.$refs.numKey.$el.contains(e.target)) {
+						that.showKey = false;
+					}
+				})
+			},
+		methods: {
+			
+			confirmText(text) {
+				this.login.userPwd = text
+				this.showKey = false
 			},
 			//表单验证
 			doLogin(formName) {
@@ -98,8 +117,6 @@
 									message: '登录成功!'
 								});
 								this.$router.push('/schematicDia')
-								
-								
 							} else {
 								that.$message({
 									type: 'warning',
@@ -181,6 +198,11 @@
 					background-image: linear-gradient(90deg, #58baff 0%, #329dff 100%);
 					opacity: 0.8;
 				}
+				.disabled {
+					input {
+						color: #ccc;
+					}
+				}
 				input {
 					width: 459px;
 					height: 73px;
@@ -189,18 +211,17 @@
 					font-size: 29px;
 					color: #333;
 				}
-				
 			}
 			/deep/.el-button {
 				margin-top: 54px;
-					width: 540px;
-					height: 73px;
-					background-image: linear-gradient(90deg, #58baff 0%, #45acff 50%, #329dff 100%);
-					border-radius: 36px;
-					span{
-						font-size: 27px;
-					}
+				width: 540px;
+				height: 73px;
+				background-image: linear-gradient(90deg, #58baff 0%, #45acff 50%, #329dff 100%);
+				border-radius: 36px;
+				span {
+					font-size: 27px;
 				}
+			}
 		}
 	}
 </style>

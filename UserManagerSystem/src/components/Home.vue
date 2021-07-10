@@ -8,7 +8,7 @@
 						<div class="header-left-cont">
 							<!--	<img src="../assets/image/home/logo.png" height="60">-->
 							<div class="header-left-cont-text" style="padding-left: 0;">
-								<h2 style="line-height: 40px;font-size: 20px;">EShop后台管理系统</h2> </div>
+								<h2 style="line-height: 40px;font-size: 20px;">组态监控后台系统</h2> </div>
 						</div>
 					</el-col>
 					<el-col class="header-right">
