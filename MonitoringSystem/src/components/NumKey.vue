@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="pinPage"> <div class="top"><input disabled type="text" v-model="currentNumber"><i class="el-icon-circle-close
+		<div :style="stylePostion" class="pinPage"> <div class="top"><input disabled type="text" v-model="currentNumber"><i class="el-icon-circle-close
 " @click="clear"></i></div>
 			<div class="inputBtnList">
 				<div @click="traceNumber" v-for="(item, key) in buttons" :key="key">{{item}}</div>
@@ -15,6 +15,12 @@
 			return {
 				currentNumber: '',
 				buttons: [1, 2, 3, 4, 5, 6, 7, 8, 9, '删除', 0, '确定']
+			}
+		},
+		props: {
+			stylePostion: {
+				type: String,
+				value:''
 			}
 		},
 		methods: {

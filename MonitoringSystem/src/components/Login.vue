@@ -86,7 +86,6 @@
 				localStorage.removeItem('loginData');
 				
 				document.addEventListener('click', (e) => {
-					debugger
 					if(e.target.parentNode.className==='num-key el-input') return
 					if (that.$refs.numKey&&!that.$refs.numKey.$el.contains(e.target)) {
 						that.showKey = false;

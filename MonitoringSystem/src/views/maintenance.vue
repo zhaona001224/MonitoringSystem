@@ -11,7 +11,7 @@
 				</div>
 			</div>
 		</div>
-		<NumKey ref="numKey" v-if="showKey" @confirmText="confirmText"></NumKey>
+		<NumKey stylePostion="margin-left:80px;margin-top:-80px" ref="numKey" v-if="showKey" @confirmText="confirmText"></NumKey>
 		<div class="box-card scroll-wrapper" ref="bscroll">
 			<div>
 				<el-table :data="tableData" width="100%">
@@ -34,12 +34,12 @@
 				</el-table>
 			</div>
 		</div>
-		<el-dialog title="" :visible.sync="showTip" width="33%">
+		<el-dialog title="" :visible.sync="showTip" width="675px">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
 			<div style="margin-bottom: 30px;" v-if="type!=1">上述维护工作已完成？</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">口令</span>
 				<el-input style="width: 260px; height: 40px"
-				 v-model="activeObj.pass" @focus="showKey=true" type="number" placeholder="请输入口令"></el-input>
+				 v-model="activeObj.pass" class="num-key" @focus="showKey=true" type="number" placeholder="请输入口令"></el-input>
 			</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">周期</span>
 				<el-input style="width: 260px; height: 40px"
@@ -182,7 +182,8 @@
 			});
 			document.addEventListener('click', (e) => {
 			
-				if (e.target.className === 'contain') return
+				if(e.target.parentNode.className==='num-key el-input') return
+				
 				if (that.$refs.numKey && !that.$refs.numKey.$el.contains(e.target)) {
 					that.showKey = false;
 				}
