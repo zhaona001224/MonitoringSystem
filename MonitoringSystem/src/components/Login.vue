@@ -17,7 +17,7 @@
 						<el-form-item prop="userPwd">
 							<div class="img"> <img src="../assets/image/login/pwd.png" /> </div>
 							<el-input type="password"
-							 v-model="login.userPwd" @focus="showKey=true" placeholder="请输入密码" auto-complete="off"></el-input>
+							 v-model="login.userPwd" class="num-key" @focus="showKey=true" placeholder="请输入密码" auto-complete="off"></el-input>
 						</el-form-item>
 						<el-button type="primary" class="login-btn" @click.native.prevent="doLogin('login')">登 录</el-button>
 					</el-form>
@@ -86,8 +86,8 @@
 				localStorage.removeItem('loginData');
 				
 				document.addEventListener('click', (e) => {
-					console.log(e.target)
-					if(e.target.className==='el-input__inner'||e.target.className==='el-form') return
+					debugger
+					if(e.target.parentNode.className==='num-key el-input') return
 					if (that.$refs.numKey&&!that.$refs.numKey.$el.contains(e.target)) {
 						that.showKey = false;
 					}

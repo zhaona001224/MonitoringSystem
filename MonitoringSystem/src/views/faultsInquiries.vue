@@ -136,6 +136,7 @@
 				showTip1: false,
 				showTip2: false,
 				activeObj: {},
+				showKey: false
 			};
 		},
 		methods: {

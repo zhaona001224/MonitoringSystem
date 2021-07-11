@@ -11,6 +11,8 @@
 				</div>
 			</div>
 		</div>
+		<NumKey ref="numKey" v-if="showKey" @confirmText="confirmText"></NumKey>
+		
 		<div class="box-card scroll-wrapper" ref="bscroll">
 			<div>
 				<el-table :data="tableData" width="100%">
@@ -37,12 +39,13 @@
 				</el-table>
 			</div>
 		</div>
+		
 		<el-dialog title="" :visible.sync="showTip" width="33%">
 			<div style="font-size: 16px;  color: #000;margin-bottom: 10px;"> {{ activeObj.name }} </div>
 			<div style="margin-bottom: 30px;" v-if="type!=1">上述维护工作已完成？</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">口令</span>
 				<el-input style="width: 260px; height: 40px"
-				 v-model="activeObj.pass" type="number" placeholder="请输入口令"></el-input>
+				 v-model="activeObj.pass" @focus="showKey=true" type="number" placeholder="请输入口令"></el-input>
 			</div>
 			<div style="margin-bottom: 20px; align: center"> <span style="width: 116px; display: inline-block">装机数</span>
 				<el-input style="width: 260px; height: 40px"
@@ -68,10 +71,12 @@
 </template>
 <script>
 	import BScroll from "better-scroll";
+	import NumKey from '@/components/NumKey'
 	export default {
 		name: "LifePart",
 		components: {
 			BScroll,
+			NumKey
 		},
 		data() {
 			return {
@@ -83,7 +88,8 @@
 				alarmData: [],
 				showTip: false,
 				activeObj: {},
-				type: ''
+				type: '',
+				showKey:false
 			};
 		},
 		methods: {
@@ -91,6 +97,10 @@
 				this.activeObj = item;
 				this.showTip = true;
 				this.type = type
+			},
+				confirmText(text) {
+				this.activeObj.pass = text
+				this.showKey = false
 			},
 			changeDate() {
 				const end = new Date(this.activeObj.target)
@@ -192,11 +202,17 @@
 		const that = this
 		this.centrifuge.subscribe("alarmdata", function(message) {
 			if (message.data.timestamp) {
-				console.log(message.data.lifes)
 				that.alarmData = message.data.lifes;
 				that.tableData = message.data.lifes.filter((item) => !item.isWarning) || []
 			}
 		});
+			document.addEventListener('click', (e) => {
+				console.log(e.target)
+				if (e.target.className === 'contain') return
+				if (that.$refs.numKey && !that.$refs.numKey.$el.contains(e.target)) {
+					that.showKey = false;
+				}
+			})
 	}
 	};
 </script>

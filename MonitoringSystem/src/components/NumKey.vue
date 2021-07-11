@@ -38,11 +38,11 @@
 </script>
 <style lang="less" scoped>
 	.pinPage {
-		position: absolute;
+		position: fixed;
 		top:50%;
 		left: 50%;
 		margin-top: -120px;
-		z-index: 100;
+		z-index: 10000;
 		margin-left: -120px;
 		background-size: 100% 100%;
 		overflow: hidden;
