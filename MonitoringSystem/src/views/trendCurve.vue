@@ -51,7 +51,7 @@
 						})
 						this.point = response.data[0] && response.data[0].datakey
 						this.changeTab(0)
-						 document.querySelector(".el-scrollbar").setAttribute('class','scrollbar1')
+						 document.querySelector(".el-scrollbar")&&document.querySelector(".el-scrollbar").setAttribute('class','scrollbar1')
 					
 					})
 			},
@@ -116,6 +116,7 @@
 					this.end.getTime(), {}).then(response => {
 					this.tableData = response.data || []
 					this.dealData()
+					 document.querySelector(".el-scrollbar")&&document.querySelector(".el-scrollbar").setAttribute('class','scrollbar1')
 				})
 			},
 			drawLine() {
