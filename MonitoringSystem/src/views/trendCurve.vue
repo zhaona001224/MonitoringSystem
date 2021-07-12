@@ -51,6 +51,8 @@
 						})
 						this.point = response.data[0] && response.data[0].datakey
 						this.changeTab(0)
+						 document.querySelector(".el-scrollbar").setAttribute('class','scrollbar1')
+					
 					})
 			},
 			//校验时间格式

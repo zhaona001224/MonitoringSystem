@@ -187,12 +187,15 @@
 				}
 				this.$forceUpdate()
 			},
+	
 			queryTabel() {
 				const url = this.activeIndex === 0 ? "/log/history/" : "/alarm/history/";
 				this.$get(url + this.point + "?start=" + this.start.getTime() + "&end=" +
 					this.end.getTime(), {}).then((response) => {
 					this.tableData = response.data || [];
 					this.dealData();
+					document.querySelector(".el-scrollbar")&&document.querySelector(".el-scrollbar").setAttribute('class','scrollbar1')
+
 				});
 			},
 			getBaseData() {
@@ -204,6 +207,8 @@
 							this.pointData[item.datakey] = item;
 						});
 						this.queryTabel();
+						 document.querySelector(".el-scrollbar").setAttribute('class','scrollbar1')
+					
 					});
 			},
 			changeTab(index) {
