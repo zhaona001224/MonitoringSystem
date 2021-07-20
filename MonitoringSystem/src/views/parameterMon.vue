@@ -5,7 +5,7 @@
 				<li v-for="(item,index) in rightList[activeIndex]&&rightList[activeIndex].positions"
 				 :key="item"><span class="index">{{index+1}}</span> <span class="title">{{pointList[item].name}}({{pointList[item].unit}})</span>
 					<div class="value ">
-						<div :class="'color1 '+getStyle(item)">{{$store.state.baseData[pointList[item].offset]||$store.state.baseData[pointList[item].offset]==0?$store.state.baseData[pointList[item].offset]:'--'}}</div>
+						<div :class="'color1 '+getStyle(item)">{{$store.state.keepData[pointList[item].offset]||$store.state.keepData[pointList[item].offset]==0?$store.state.keepData[pointList[item].offset]:'--'}}</div>
 						<div class="sub-title">运行值</div>
 					</div>
 					<div class="split"></div>

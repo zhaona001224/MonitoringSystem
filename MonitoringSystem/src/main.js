@@ -47,7 +47,13 @@ var subscription = centrifuge.subscribe("alarmdata", function(message) {
 
 });
 var subscription = centrifuge.subscribe("keepdata", function(message) {
+	if(message.data.online!=1){
+		store.commit(types.KEEPDATA, []);
+	}else{
+		store.commit(types.KEEPDATA, message.data.data);
+	}
 	store.commit(types.BASEDATA, message.data.data);
+	
 });
 Vue.prototype.centrifuge = centrifuge;
 new Vue({

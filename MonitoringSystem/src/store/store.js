@@ -10,7 +10,8 @@ export default new Vuex.Store({
 		imgUrl: window.imgUrl,
 		baseUrl: window.origin.indexOf('localhost') > -1 ?
 			'http://216.24.249.93:8080' : 'https://support.bk.cloudns.cc:8081',
-		baseData: {}
+		baseData: {},
+		keepData:{}
 	},
 	mutations: {
 
@@ -44,6 +45,10 @@ export default new Vuex.Store({
 		},
 		[types.BASEDATA]: (state, data) => {
 			localStorage.baseData = data;
+			state.baseData = data;
+		},
+		[types.KEEPDATA]: (state, data) => {
+			localStorage.keepData = data;
 			state.baseData = data;
 		},
 		[types.ALARMDATA]: (state, data) => {
