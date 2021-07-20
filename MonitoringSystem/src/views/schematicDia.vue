@@ -17,7 +17,7 @@
 						<div class="tip-right">
 							<div @click.stop="queryTabel(subItem)" v-for="(subItem,subIndex) in item.point">
 								<div class="blink" v-if="alarmData[subItem.datakey]"> {{alarmData[subItem.datakey].name}} </div>
-								<div> {{subItem.name}} {{$store.state.baseData[subItem.offset]}}{{subItem.unit}}
+								<div> {{subItem.name}} {{$store.state.baseData[subItem.offset]?$store.state.baseData[subItem.offset]:'--'}}{{subItem.unit}}
 									</div>
 							</div>
 						</div>
